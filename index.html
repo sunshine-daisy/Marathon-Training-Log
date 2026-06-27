@@ -181,6 +181,8 @@
   .unit{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden}
   .unit .u{font-family:'Albert Sans'; font-size:11px; font-weight:700; padding:6px 10px; background:#fff; color:var(--ink-soft); cursor:pointer; border:none; transition:.12s}
   .unit .u.sel{background:var(--teal); color:#fff}
+  .dayreset{margin-left:auto; width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); font-size:15px; cursor:pointer; transition:.15s; line-height:1; display:flex; align-items:center; justify-content:center; flex:none}
+  .dayreset:hover{background:var(--ember-soft); border-color:var(--ember); color:var(--ember-dk)}
   .milesauto{font-family:'Fraunces',serif; font-weight:900; font-size:30px; color:var(--teal-dk); line-height:1.05}
   .milesauto .hint{display:block; font-family:'Albert Sans'; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; text-transform:none; margin-top:3px}
   .rgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
@@ -381,7 +383,7 @@
     <div class="tools">
       <button class="tbtn" id="exportBtn">⬇ Export data</button>
       <button class="tbtn" id="importBtn">⬆ Import</button>
-      <button class="tbtn danger" id="resetBtn">Reset week</button>
+      <button class="tbtn danger" id="resetBtn">↺ Reset week</button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
     </div>
     <div class="note">Your log is saved privately in this browser. Export a backup now and then, especially before clearing browser data.</div>
@@ -565,6 +567,7 @@ function renderDays(){
           <button class="feel ${log.feel==='ok'?'sel':''}" data-f="ok" title="OK">😐</button>
           <button class="feel ${log.feel==='great'?'sel':''}" data-f="great" title="Great">😄</button>
         </div>
+        <button class="dayreset" data-d="${idx}" title="Clear this day">↺</button>
       </div>
       ${showMetrics?`<div class="dmetrics" data-d="${idx}">
         <label class="dnum">mi<input class="mi" type="number" inputmode="decimal" min="0" step="0.1" value="${log.miles!=null?log.miles:''}" placeholder="0"></label>
@@ -585,6 +588,7 @@ function renderDays(){
   grid.querySelectorAll('.dmetrics .mi').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.miles=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); softTotals(); });
   grid.querySelectorAll('.dmetrics .tm').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.time=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
   grid.querySelectorAll('.dmetrics .u').forEach(b=>b.onclick=()=>{ const box=b.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.timeUnit=b.dataset.u; persistQuiet(); box.querySelectorAll('.u').forEach(x=>x.classList.toggle('sel',x===b)); });
+  grid.querySelectorAll('.dayreset').forEach(b=>b.onclick=()=>{ const i=b.dataset.d; if(confirm('Clear '+DAYS[+i]+'\'s log for this week?')){ w.days[i]={}; persist(); renderDays(); renderHeader(); softTotals(); } });
 }
 function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); }
 
