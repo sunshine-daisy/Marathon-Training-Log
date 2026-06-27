@@ -91,7 +91,14 @@
   .weekhead{flex:1 1 auto; min-width:180px}
   .weekhead .wktitle{font-family:'Fraunces',serif; font-weight:700; font-size:21px; color:var(--ink); display:flex; align-items:center; gap:10px; flex-wrap:wrap}
   .phasetag{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:#fff; padding:3px 10px; border-radius:20px}
-  .weekhead .wkmeta{font-size:12.5px; color:var(--ink-soft); margin-top:3px}
+  .weekhead .wkmeta{font-size:12.5px; color:var(--ink-soft); margin-top:2px}
+  .weekhead .wkdate{font-family:'Fraunces',serif; font-weight:900; font-size:25px; color:var(--teal-dk); line-height:1.05; margin-top:5px}
+  .weekhead .wkdate .wkof{font-family:'Albert Sans'; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-soft); display:block; margin-bottom:1px}
+  .navreset{font-size:12px; font-weight:700; border:1px solid #E6B0A2; color:var(--ember-dk); background:#fff; border-radius:10px; padding:8px 12px; cursor:pointer; transition:.15s; flex:none; white-space:nowrap}
+  .navreset:hover{background:var(--ember-dk); color:#fff; border-color:var(--ember-dk)}
+  .weeknote{background:linear-gradient(135deg,#FFF7E4,#FBEEC9); border:1px solid #E8D08A; border-left:5px solid var(--gold); border-radius:14px; padding:13px 16px; margin-bottom:18px; font-size:13.5px; color:#5a4a1f; line-height:1.55}
+  .weeknote b{color:#7a5d12}
+  .weeknote a{color:var(--ember-dk); font-weight:700}
   .jump{font-family:'Albert Sans'; font-size:13px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; background:#fff; color:var(--ink); cursor:pointer}
   .todaybtn{font-size:12px; font-weight:600; border:1px dashed var(--ember); color:var(--ember-dk); background:var(--ember-soft); border-radius:10px; padding:8px 12px; cursor:pointer; transition:.15s}
   .todaybtn:hover{background:var(--ember); color:#fff}
@@ -332,12 +339,16 @@
     <button class="navbtn" id="prevWk">‹</button>
     <div class="weekhead">
       <div class="wktitle"><span id="wkLabel">Week 1</span><span class="phasetag" id="wkPhase">Foundation</span></div>
-      <div class="wkmeta" id="wkMeta">Week of Jun 1 · 22 weeks to go</div>
+      <div class="wkdate"><span class="wkof">Week of</span><span id="wkDate">June 29</span></div>
+      <div class="wkmeta" id="wkMeta">18 weeks to go</div>
     </div>
     <button class="todaybtn" id="todayBtn">Jump to today</button>
+    <button class="navreset" id="resetBtn" title="Clear this week's logs">↺ Reset week</button>
     <select class="jump" id="wkJump"></select>
     <button class="navbtn" id="nextWk">›</button>
   </div>
+
+  <div class="weeknote" id="weekNote" hidden></div>
 
   <div class="days" id="dayGrid"></div>
 
@@ -383,7 +394,6 @@
     <div class="tools">
       <button class="tbtn" id="exportBtn">⬇ Export data</button>
       <button class="tbtn" id="importBtn">⬆ Import</button>
-      <button class="tbtn danger" id="resetBtn">↺ Reset week</button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
     </div>
     <div class="note">Your log is saved privately in this browser. Export a backup now and then, especially before clearing browser data.</div>
@@ -399,7 +409,7 @@ const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 // per week: phase, weeks-to-go, run content for Mon / Wed / Sat (long)
 const PLAN = [
- {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 45s / walk 90s', wed:'20 min\nrun 45s / walk 90s', sat:'25 min\nrun 45s / walk 90s'},
+ {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 45s / walk 90s', wed:'20 min\nrun 45s / walk 90s', sat:'25 min\nrun 45s / walk 90s', note:'🗓️ <b>To-do soon:</b> email the race (<a href="mailto:info@beyondmonumental.org">info@beyondmonumental.org</a>) and ask the <b>deadline &amp; process to switch from full → half.</b> Get it in writing now — you\'re not deciding anything yet, you just want to know the cutoff.'},
  {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 1 / walk 90s', wed:'22 min\nrun 1 / walk 90s', sat:'28 min\nrun 1 / walk 90s'},
  {wk:3, ph:'Foundation', wtg:'16', mon:'24 min\nrun 1 / walk 1', wed:'24 min\nrun 1 / walk 1', sat:'32 min\nrun 1 / walk 1'},
  {wk:4, ph:'Foundation', wtg:'15', mon:'26 min\nrun 90s / walk 1', wed:'26 min\nrun 90s / walk 1', sat:'36 min\nrun 90s / walk 1'},
@@ -412,9 +422,9 @@ const PLAN = [
  {wk:11, ph:'Build', wtg:'8', mon:'3 mi', wed:'3.5 mi', sat:'8 mi'},
  {wk:12, ph:'Build', wtg:'7', mon:'3 mi', wed:'3.5 mi', sat:'6 mi\n(cutback)'},
  {wk:13, ph:'Go Long', wtg:'6', mon:'3 mi', wed:'4 mi', sat:'10 mi'},
- {wk:14, ph:'Go Long', wtg:'5', mon:'3 mi', wed:'4 mi', sat:'12 mi'},
- {wk:15, ph:'Go Long', wtg:'4', mon:'3 mi', wed:'4 mi', sat:'15 mi'},
- {wk:16, ph:'Go Long', wtg:'3', mon:'3 mi', wed:'4 mi', sat:'18 mi\n★ PEAK'},
+ {wk:14, ph:'Go Long', wtg:'5', mon:'3 mi', wed:'4 mi', sat:'12 mi', note:'🤔 <b>Decision window opens.</b> How did today\'s 12-miler feel? Start watching your run/walk pace — the race cutoff is 16:00/mile. No decision yet; just notice how your body\'s responding.'},
+ {wk:15, ph:'Go Long', wtg:'4', mon:'3 mi', wed:'4 mi', sat:'15 mi', note:'🤔 <b>Full vs. half check-in.</b> If the long runs are flowing and you\'re holding under ~16:00/mile, lean toward the full. If they\'re a grind, the half is a strong, smart finish. You\'ll make the real call next week.'},
+ {wk:16, ph:'Go Long', wtg:'3', mon:'3 mi', wed:'4 mi', sat:'18 mi\n★ PEAK', note:'⭐ <b>Decision point — you have real data now.</b> After today\'s 18-mile peak, make the call: <b>full or half.</b> Then confirm your choice with the race before their switch deadline. Trust your legs.'},
  {wk:17, ph:'Taper', wtg:'2', mon:'3 mi', wed:'3 mi', sat:'12 mi'},
  {wk:18, ph:'Taper', wtg:'1', mon:'2 mi', wed:'3 mi', sat:'8 mi'},
  {wk:19, ph:'Race Week', wtg:'RACE', mon:'2 mi easy', wed:'2 mi easy', sat:'RACE'},
@@ -531,9 +541,11 @@ function renderWeekNav(){
   $('wkLabel').textContent='Week '+view;
   const tag=$('wkPhase'); tag.textContent=p.ph; tag.style.background=PHASE_COLOR[p.ph];
   const mon=dateFor(view,0);
-  $('wkMeta').textContent='Week of '+fmtDate(mon)+' · '+(p.wtg==='RACE'?'race week!':p.wtg+' weeks to go');
+  $('wkDate').textContent=mon.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+  $('wkMeta').textContent=(p.wtg==='RACE'?'🏁 race week!':p.wtg+' weeks to go');
   $('prevWk').disabled=view<=1; $('nextWk').disabled=view>=19;
   $('wkJump').value=view;
+  const wn=$('weekNote'); if(p.note){ wn.hidden=false; wn.innerHTML=p.note; } else { wn.hidden=true; wn.innerHTML=''; }
 }
 
 function renderModes(){
