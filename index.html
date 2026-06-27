@@ -174,6 +174,13 @@
   .dmiles{display:flex; align-items:center; gap:5px; margin-left:auto; font-size:11.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.06em}
   .dmiles input{width:60px; font-family:'Albert Sans'; font-size:14px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff; text-align:right}
   .dmiles input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
+  .dmetrics{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:11px}
+  .dnum{display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em}
+  .dnum input{width:56px; font-family:'Albert Sans'; font-size:14px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff; text-align:right}
+  .dnum input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
+  .unit{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden}
+  .unit .u{font-family:'Albert Sans'; font-size:11px; font-weight:700; padding:6px 10px; background:#fff; color:var(--ink-soft); cursor:pointer; border:none; transition:.12s}
+  .unit .u.sel{background:var(--teal); color:#fff}
   .milesauto{font-family:'Fraunces',serif; font-weight:900; font-size:30px; color:var(--teal-dk); line-height:1.05}
   .milesauto .hint{display:block; font-family:'Albert Sans'; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; text-transform:none; margin-top:3px}
   .rgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
@@ -289,7 +296,7 @@
     <div class="lbcards" id="lbCards"></div>
     <div class="lbgridwrap">
       <div class="lbgrid" id="lbGrid"></div>
-      <div class="lbcap">Each square = one training week (Weeks 1 → 23). Deeper color = more days logged. Current week outlined.</div>
+      <div class="lbcap">Each square = one training week (Weeks 1 → 19). Deeper color = more days logged. Current week outlined.</div>
     </div>
   </section>
 
@@ -306,7 +313,7 @@
 
   <div class="stats">
     <div class="stat"><div class="v" id="stWeek">–</div><div class="k">Current week</div></div>
-    <div class="stat"><div class="v" id="stWeeksDone">0 / 23</div><div class="k">Weeks logged</div><div class="bar"><i id="barWeeks" style="width:0"></i></div></div>
+    <div class="stat"><div class="v" id="stWeeksDone">0 / 19</div><div class="k">Weeks logged</div><div class="bar"><i id="barWeeks" style="width:0"></i></div></div>
     <div class="stat"><div class="v" id="stThisWeek">0 / 7</div><div class="k">This week's days</div><div class="bar"><i id="barThis" style="width:0"></i></div></div>
     <div class="stat"><div class="v" id="stMiles">0</div><div class="k">Miles logged</div></div>
   </div>
@@ -328,15 +335,6 @@
     <button class="todaybtn" id="todayBtn">Jump to today</button>
     <select class="jump" id="wkJump"></select>
     <button class="navbtn" id="nextWk">›</button>
-  </div>
-
-  <div class="modecard">
-    <div class="ask">Set your week<small>On Monday, choose this week's gym plan — your daily workouts update to match.</small></div>
-    <div class="modes" id="modeBtns">
-      <button class="modebtn" data-mode="g3">3× Gym<small>Tue·Wed·Thu</small></button>
-      <button class="modebtn" data-mode="g2">2× Gym<small>Tue·Thu</small></button>
-      <button class="modebtn" data-mode="none">No Gym<small>travel / run only</small></button>
-    </div>
   </div>
 
   <div class="days" id="dayGrid"></div>
@@ -392,43 +390,39 @@
 </div>
 
 <script>
-/* ============ PLAN DATA (from your 23-week schedule) ============ */
-const BASE_MONDAY = new Date(2026,5,1);      // Mon Jun 1, 2026
+/* ============ PLAN DATA (from your 19-week schedule) ============ */
+const BASE_MONDAY = new Date(2026,5,29);     // Mon Jun 29, 2026
 const RACE_DATE   = new Date(2026,10,7);     // Sat Nov 7, 2026
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-// per week: phase, weeks-to-go, run content for the run slots
+// per week: phase, weeks-to-go, run content for Mon / Wed / Sat (long)
 const PLAN = [
- {wk:1, ph:'Foundation', wtg:'22', mon:'20 min\nrun 2 / walk 1', wedRun:'20 min\nrun 2 / walk 1', thuRun:null, tueRun:null, sat:'30 min\nrun 2 / walk 1'},
- {wk:2, ph:'Foundation', wtg:'21', mon:'25 min\nrun 2 / walk 1', wedRun:'25 min\nrun 2 / walk 1', thuRun:null, tueRun:null, sat:'35 min\nrun 2 / walk 1'},
- {wk:3, ph:'Foundation', wtg:'20', mon:'30 min\nrun 3 / walk 1', wedRun:'30 min\nrun 3 / walk 1', thuRun:null, tueRun:null, sat:'40 min\nrun 3 / walk 1'},
- {wk:4, ph:'Foundation', wtg:'19', mon:'35 min\nrun 4 / walk 1', wedRun:'35 min\nrun 4 / walk 1', thuRun:null, tueRun:null, sat:'45 min\nrun 4 / walk 1'},
- {wk:5, ph:'Foundation', wtg:'18', mon:'40 min\nrun 5 / walk 1', wedRun:'40 min\nrun 5 / walk 1', thuRun:null, tueRun:null, sat:'5K (3.1 mi)\neasy test'},
- {wk:6, ph:'Base to Pace', wtg:'17', mon:'3 mi easy', tueRun:'3 mi easy', thuRun:'3 mi', sat:'5 mi'},
- {wk:7, ph:'Base to Pace', wtg:'16', mon:'3 mi easy', tueRun:'3 mi easy', thuRun:'3 mi', sat:'6 mi'},
- {wk:8, ph:'Base to Pace', wtg:'15', mon:'3 mi easy', tueRun:'4 mi', thuRun:'3 mi', sat:'6 mi'},
- {wk:9, ph:'Base to Pace', wtg:'14', mon:'3.1 mi (5K test)', tueRun:'4 mi', thuRun:'3 mi', sat:'8 mi'},
- {wk:10, ph:'Base to Pace', wtg:'13', mon:'3 mi easy', tueRun:'5 mi', thuRun:'3 mi', sat:'10 mi'},
- {wk:11, ph:'Base to Pace', wtg:'12', mon:'3 mi easy', tueRun:'5 mi', thuRun:'3 mi', sat:'10K test\n(6.2 mi)'},
- {wk:12, ph:'Go the Distance', wtg:'11', mon:'3 mi easy', tueRun:'6 mi', thuRun:'3 mi', sat:'12 mi'},
- {wk:13, ph:'Go the Distance', wtg:'10', mon:'3.1 mi (5K test)', tueRun:'6 mi (goal race pace)', thuRun:'4 mi', sat:'13 mi'},
- {wk:14, ph:'Go the Distance', wtg:'9', mon:'3 mi easy', tueRun:'7 mi', thuRun:'4 mi', sat:'10 mi'},
- {wk:15, ph:'Go the Distance', wtg:'8', mon:'3 mi easy', tueRun:'7 mi', thuRun:'4 mi', sat:'15 mi'},
- {wk:16, ph:'Go the Distance', wtg:'7', mon:'4 mi easy', tueRun:'8 mi', thuRun:'4 mi', sat:'16 mi'},
- {wk:17, ph:'Go the Distance', wtg:'6', mon:'4 mi easy', tueRun:'8 mi (goal race pace)', thuRun:'5 mi', sat:'12 mi'},
- {wk:18, ph:'Go the Distance', wtg:'5', mon:'5 mi easy', tueRun:'9 mi', thuRun:'5 mi', sat:'18 mi'},
- {wk:19, ph:'Go the Distance', wtg:'4', mon:'5 mi easy', tueRun:'9 mi', thuRun:'5 mi', sat:'14 mi'},
- {wk:20, ph:'Go the Distance', wtg:'3', mon:'5 mi easy', tueRun:'10 mi', thuRun:'5 mi', sat:'20 mi'},
- {wk:21, ph:'Taper', wtg:'2', mon:'5 mi easy', tueRun:'8 mi (goal race pace)', thuRun:'4 mi', sat:'12 mi'},
- {wk:22, ph:'Taper', wtg:'1', mon:'4 mi easy', tueRun:'6 mi', thuRun:'3 mi easy', sat:'8 mi'},
- {wk:23, ph:'Taper', wtg:'RACE', mon:'3 mi easy', tueRun:'4 mi', thuRun:'2 mi easy', sat:'RACE'},
+ {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 45s / walk 90s', wed:'20 min\nrun 45s / walk 90s', sat:'25 min\nrun 45s / walk 90s'},
+ {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 1 / walk 90s', wed:'22 min\nrun 1 / walk 90s', sat:'28 min\nrun 1 / walk 90s'},
+ {wk:3, ph:'Foundation', wtg:'16', mon:'24 min\nrun 1 / walk 1', wed:'24 min\nrun 1 / walk 1', sat:'32 min\nrun 1 / walk 1'},
+ {wk:4, ph:'Foundation', wtg:'15', mon:'26 min\nrun 90s / walk 1', wed:'26 min\nrun 90s / walk 1', sat:'36 min\nrun 90s / walk 1'},
+ {wk:5, ph:'Foundation', wtg:'14', mon:'28 min\nrun 2 / walk 1', wed:'28 min\nrun 2 / walk 1', sat:'40 min\nrun 2 / walk 1'},
+ {wk:6, ph:'Foundation', wtg:'13', mon:'30 min\nrun 3 / walk 1', wed:'30 min\nrun 3 / walk 1', sat:'45 min\nrun 3 / walk 1'},
+ {wk:7, ph:'Build', wtg:'12', mon:'2 mi', wed:'2.5 mi', sat:'4 mi'},
+ {wk:8, ph:'Build', wtg:'11', mon:'2 mi', wed:'3 mi', sat:'5 mi'},
+ {wk:9, ph:'Build', wtg:'10', mon:'2.5 mi', wed:'3 mi', sat:'6 mi'},
+ {wk:10, ph:'Build', wtg:'9', mon:'2.5 mi', wed:'3 mi', sat:'7 mi'},
+ {wk:11, ph:'Build', wtg:'8', mon:'3 mi', wed:'3.5 mi', sat:'8 mi'},
+ {wk:12, ph:'Build', wtg:'7', mon:'3 mi', wed:'3.5 mi', sat:'6 mi\n(cutback)'},
+ {wk:13, ph:'Go Long', wtg:'6', mon:'3 mi', wed:'4 mi', sat:'10 mi'},
+ {wk:14, ph:'Go Long', wtg:'5', mon:'3 mi', wed:'4 mi', sat:'12 mi'},
+ {wk:15, ph:'Go Long', wtg:'4', mon:'3 mi', wed:'4 mi', sat:'15 mi'},
+ {wk:16, ph:'Go Long', wtg:'3', mon:'3 mi', wed:'4 mi', sat:'18 mi\n★ PEAK'},
+ {wk:17, ph:'Taper', wtg:'2', mon:'3 mi', wed:'3 mi', sat:'12 mi'},
+ {wk:18, ph:'Taper', wtg:'1', mon:'2 mi', wed:'3 mi', sat:'8 mi'},
+ {wk:19, ph:'Race Week', wtg:'RACE', mon:'2 mi easy', wed:'2 mi easy', sat:'RACE'},
 ];
 
-const PHASE_COLOR = {'Foundation':'var(--found)','Base to Pace':'var(--base)','Go the Distance':'var(--dist)','Taper':'var(--taper)'};
+const PHASE_COLOR = {'Foundation':'var(--found)','Build':'var(--base)','Go Long':'var(--dist)','Taper':'var(--taper)','Race Week':'var(--gold)'};
 const CAT = {
   run:{i:'🏃',t:'Run',c:'var(--teal-soft)',f:'var(--teal-dk)'},
   runGym:{i:'🏃',t:'Run + Gym',c:'var(--teal-soft)',f:'var(--teal-dk)'},
-  gym:{i:'🏋️',t:'Gym',c:'#EDE3F4',f:'#6B4A86'},
+  gym:{i:'💪',t:'Gym',c:'#EDE3F4',f:'#6B4A86'},
   strength:{i:'🏋️',t:'Strength',c:'#EDE3F4',f:'#6B4A86'},
   core:{i:'🧘',t:'Core',c:'#EDE3F4',f:'#6B4A86'},
   cross:{i:'🚴',t:'Cross-train',c:'#E7F0DE',f:'#4C7A3A'},
@@ -441,54 +435,19 @@ const CAT = {
 };
 
 /* ============ DAY COMPUTATION ============ */
-function dayCells(p, mode){
-  const found = p.ph==='Foundation', taper=(p.wk===21||p.wk===22), race=p.wk===23;
+function dayCells(p){
+  const race = p.wk===19;
   const cell=(plan,cat)=>({plan,cat});
-  const set = !!mode;
-  // MON — always a run
-  const monCat = p.mon.includes('test')?'test':'run';
-  const mon = cell(p.mon, monCat);
-  // TUE
-  let tue;
-  if(found){
-    if(!set) tue=cell('Choose gym plan ☝️','tbd');
-    else if(mode==='g3') tue=cell('Gym — legs','gym');
-    else if(mode==='g2') tue=cell('Gym — full body','gym');
-    else tue=cell('Rest / optional bodyweight','bodyweight');
-  } else {
-    const tt=p.tueRun.includes('test');
-    if(!set) tue=cell(p.tueRun+'\n+ gym (set plan ☝️)','tbd');
-    else if(mode==='none') tue=cell(p.tueRun, tt?'test':'run');
-    else { const lab=(taper||race)?' (light)':(mode==='g3'?' (legs)':' (full body)'); tue=cell(p.tueRun+'\n+ Gym'+lab,'runGym'); }
-  }
-  // WED
-  let wed;
-  if(found){
-    if(mode==='g3') wed=cell(p.wedRun+'\n+ Gym (core)','runGym');
-    else wed=cell(p.wedRun, 'run');
-  } else {
-    if(!set) wed=cell('Set gym plan ☝️','tbd');
-    else if(mode==='g3') wed=cell(race?'Core only (no heavy)':(p.wk===22?'Strength (light)':'Strength + core'),'strength');
-    else if(mode==='g2') wed=cell(race?'Core only (no heavy)':(p.wk===22?'Core + mobility (light)':'Core + mobility / rest'),'core');
-    else wed=cell(race?'Rest / easy walk':'Rest / easy cross-train','rest');
-  }
-  // THU
-  let thu;
-  if(found){
-    if(!set) thu=cell('Choose gym plan ☝️','tbd');
-    else if(mode==='none') thu=cell('Rest / optional bodyweight','bodyweight');
-    else thu=cell('Gym — upper','gym');
-  } else {
-    const tt=p.thuRun.includes('test');
-    if(!set) thu=cell(p.thuRun+'\n+ gym (set plan ☝️)','tbd');
-    else if(mode==='none'||race) thu=cell(p.thuRun, tt?'test':'run');
-    else thu=cell(p.thuRun+'\n+ Gym (upper)','runGym');
-  }
-  // FRI / SAT / SUN
-  const fri = race?cell('Rest','rest'):cell('Easy cross-train (or rest)','cross');
-  const sat = race?cell('🏁 RACE DAY — Nov 7','race'):cell(p.sat, p.sat.includes('test')?'test':'long');
-  const sun = race?cell('Rest & celebrate!','rest'):cell('Rest','rest');
-  return [mon,tue,wed,thu,fri,sat,sun];
+  return [
+    cell(p.mon, 'run'),                                                  // Mon
+    cell(race?'Strength — keep it light':'Strength training', 'gym'),    // Tue
+    cell(p.wed, 'run'),                                                  // Wed
+    race ? cell('Rest', 'rest') : cell('Strength training', 'gym'),      // Thu
+    cell('Rest', 'rest'),                                                // Fri
+    race ? cell('🏁 RACE DAY — 26.2\nNov 7', 'race')                     // Sat
+         : cell(p.sat + '\n(group run)', 'long'),
+    race ? cell('Rest & celebrate!', 'rest') : cell('Strength training', 'gym')  // Sun
+  ];
 }
 
 /* ============ STORAGE (multi-user) ============ */
@@ -533,7 +492,7 @@ let view = DATA.view || currentWeek();
 function currentWeek(){
   const t=new Date(); t.setHours(0,0,0,0);
   const diff=Math.floor((t-BASE_MONDAY)/(7*864e5));
-  return Math.min(23,Math.max(1,diff+1));
+  return Math.min(19,Math.max(1,diff+1));
 }
 function dateFor(wk,dayIdx){ const d=new Date(BASE_MONDAY); d.setDate(d.getDate()+(wk-1)*7+dayIdx); return d; }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
@@ -556,9 +515,9 @@ function renderHeader(){
   $('stWeek').textContent = view + (PLAN[view-1].wtg==='RACE'?' · RACE':'');
   // weeks logged = weeks with a mode set OR any day done
   let wkDone=0, miles=0;
-  for(let i=1;i<=23;i++){ const w=DATA.weeks[i]; if(w&&(w.mode||Object.values(w.days||{}).some(x=>x&&x.done))) wkDone++; miles+=weekMiles(w); }
-  $('stWeeksDone').textContent = wkDone+' / 23';
-  $('barWeeks').style.width=(wkDone/23*100)+'%';
+  for(let i=1;i<=19;i++){ const w=DATA.weeks[i]; if(w&&Object.values(w.days||{}).some(x=>x&&x.done)) wkDone++; miles+=weekMiles(w); }
+  $('stWeeksDone').textContent = wkDone+' / 19';
+  $('barWeeks').style.width=(wkDone/19*100)+'%';
   $('stMiles').textContent = Math.round(miles*10)/10;
   const w=wkData(view), doneCt=Object.values(w.days).filter(x=>x&&x.done).length;
   $('stThisWeek').textContent = doneCt+' / 7';
@@ -571,7 +530,7 @@ function renderWeekNav(){
   const tag=$('wkPhase'); tag.textContent=p.ph; tag.style.background=PHASE_COLOR[p.ph];
   const mon=dateFor(view,0);
   $('wkMeta').textContent='Week of '+fmtDate(mon)+' · '+(p.wtg==='RACE'?'race week!':p.wtg+' weeks to go');
-  $('prevWk').disabled=view<=1; $('nextWk').disabled=view>=23;
+  $('prevWk').disabled=view<=1; $('nextWk').disabled=view>=19;
   $('wkJump').value=view;
 }
 
@@ -581,7 +540,7 @@ function renderModes(){
 }
 
 function renderDays(){
-  const p=PLAN[view-1], w=wkData(view), cells=dayCells(p,w.mode);
+  const p=PLAN[view-1], w=wkData(view), cells=dayCells(p);
   const grid=$('dayGrid'); grid.innerHTML='';
   cells.forEach((c,idx)=>{
     const meta=CAT[c.cat], log=w.days[idx]||{};
@@ -590,7 +549,9 @@ function renderDays(){
     el.className='day cat-'+c.cat+(log.done?' done':'');
     el.style.animationDelay=(idx*0.04)+'s';
     const longBadge = c.cat==='long'?'<span class="longbadge">KEY RUN</span>':'';
-    const showMiles = ['run','runGym','long','test','race'].includes(c.cat);
+    const showMetrics = ['run','long','race'].includes(c.cat);
+    const defUnit = (PLAN[view-1].wk<=5)?'sec':'min';
+    const unit = log.timeUnit||defUnit;
     el.innerHTML=`
       <div class="dhead">
         <div><div class="dname">${DAYS[idx]}</div><div class="ddate">${fmtDate(dt)}</div></div>
@@ -604,9 +565,16 @@ function renderDays(){
           <button class="feel ${log.feel==='ok'?'sel':''}" data-f="ok" title="OK">😐</button>
           <button class="feel ${log.feel==='great'?'sel':''}" data-f="great" title="Great">😄</button>
         </div>
-        ${showMiles?`<label class="dmiles">mi<input type="number" inputmode="decimal" min="0" step="0.1" data-d="${idx}" value="${log.miles!=null?log.miles:''}" placeholder="0"></label>`:''}
       </div>
-      <textarea class="dnote" rows="1" data-d="${idx}" placeholder="What you actually did…">${log.notes||''}</textarea>
+      ${showMetrics?`<div class="dmetrics" data-d="${idx}">
+        <label class="dnum">mi<input class="mi" type="number" inputmode="decimal" min="0" step="0.1" value="${log.miles!=null?log.miles:''}" placeholder="0"></label>
+        <label class="dnum">ran<input class="tm" type="number" inputmode="numeric" min="0" step="1" value="${log.time!=null?log.time:''}" placeholder="0"></label>
+        <div class="unit">
+          <button class="u ${unit==='sec'?'sel':''}" data-u="sec">sec</button>
+          <button class="u ${unit==='min'?'sel':''}" data-u="min">min</button>
+        </div>
+      </div>`:''}
+      <textarea class="dnote" rows="1" data-d="${idx}" placeholder="${c.cat==='gym'?'What you lifted today…':'What you actually did…'}">${log.notes||''}</textarea>
     `;
     grid.appendChild(el);
   });
@@ -614,7 +582,9 @@ function renderDays(){
   grid.querySelectorAll('.donebtn').forEach(b=>b.onclick=()=>{ const i=b.dataset.d, l=w.days[i]||(w.days[i]={}); l.done=!l.done; persist(); renderDays(); renderHeader(); });
   grid.querySelectorAll('.feels').forEach(g=>g.querySelectorAll('.feel').forEach(b=>b.onclick=()=>{ const i=g.dataset.d, l=w.days[i]||(w.days[i]={}); l.feel=(l.feel===b.dataset.f)?null:b.dataset.f; persist(); renderDays(); }));
   grid.querySelectorAll('.dnote').forEach(t=>t.oninput=()=>{ const i=t.dataset.d, l=w.days[i]||(w.days[i]={}); l.notes=t.value; persistQuiet(); });
-  grid.querySelectorAll('.dmiles input').forEach(inp=>inp.oninput=()=>{ const i=inp.dataset.d, l=w.days[i]||(w.days[i]={}); l.miles=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); softTotals(); });
+  grid.querySelectorAll('.dmetrics .mi').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.miles=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); softTotals(); });
+  grid.querySelectorAll('.dmetrics .tm').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.time=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
+  grid.querySelectorAll('.dmetrics .u').forEach(b=>b.onclick=()=>{ const box=b.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.timeUnit=b.dataset.u; persistQuiet(); box.querySelectorAll('.u').forEach(x=>x.classList.toggle('sel',x===b)); });
 }
 function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); }
 
@@ -629,13 +599,12 @@ function renderReflect(){
 function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); cloudAutoPush(); }
 let qt; function persistQuiet(){ DATA.view=view; DATA.updatedAt=Date.now(); clearTimeout(qt); qt=setTimeout(()=>store.save(),400); cloudAutoPush(); }
 
-function renderAll(){ renderWeekNav(); renderModes(); renderDays(); renderReflect(); renderHeader(); renderHeatmap(); }
+function renderAll(){ renderWeekNav(); renderDays(); renderReflect(); renderHeader(); renderHeatmap(); }
 
 /* ============ EVENTS ============ */
 $('prevWk').onclick=()=>{ if(view>1){view--; persist(); renderAll();} };
-$('nextWk').onclick=()=>{ if(view<23){view++; persist(); renderAll();} };
+$('nextWk').onclick=()=>{ if(view<19){view++; persist(); renderAll();} };
 $('todayBtn').onclick=()=>{ view=currentWeek(); persist(); renderAll(); };
-$('modeBtns').querySelectorAll('.modebtn').forEach(b=>b.onclick=()=>{ const w=wkData(view); w.mode=(w.mode===b.dataset.mode)?null:b.dataset.mode; persist(); renderModes(); renderDays(); });
 ['refWins','refLong','refAdjust'].forEach(id=>{ const f={refWins:'wins',refLong:'long',refAdjust:'adjust'}[id]; $(id).oninput=()=>{ wkData(view).ref[f]=$(id).value; persistQuiet(); }; });
 
 $('exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify(ROOT,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='marathon-log-backup.json'; a.click(); };
@@ -656,7 +625,7 @@ jump.onchange=()=>{ view=parseInt(jump.value); persist(); renderAll(); };
 /* ============ HEATMAP ============ */
 function renderHeatmap(){
   const hm=$('heatmap'); if(!hm) return; hm.innerHTML='';
-  for(let i=1;i<=23;i++){
+  for(let i=1;i<=19;i++){
     const p=PLAN[i-1], w=DATA.weeks[i];
     const done = w?Object.values(w.days||{}).filter(x=>x&&x.done).length:0;
     const c=done/7;
@@ -753,9 +722,9 @@ const TEAM={};                       // cloud snapshot of every runner (session-
 function hexToRgb(h){ const n=parseInt(h.slice(1),16); return [n>>16&255, n>>8&255, n&255]; }
 function statsFor(u){
   const cw=currentWeek(); let days=0, miles=0, weeks=0, thisWk=0;
-  if(u&&u.weeks){ for(let i=1;i<=23;i++){ const w=u.weeks[i]; if(!w)continue;
+  if(u&&u.weeks){ for(let i=1;i<=19;i++){ const w=u.weeks[i]; if(!w)continue;
     const d=Object.values(w.days||{}).filter(x=>x&&x.done).length; days+=d;
-    if(w.mode||d>0) weeks++; miles+=weekMiles(w);
+    if(d>0) weeks++; miles+=weekMiles(w);
     if(i===cw) thisWk=d; } }
   return {days, miles:Math.round(miles*10)/10, weeks, thisWk};
 }
@@ -775,14 +744,14 @@ function renderLeaderboard(){
     el.innerHTML='<div class="medal">'+medal[r.u.id]+'</div>'+
       '<div class="rname"><span class="rdot" style="background:'+r.u.color+'"></span>'+r.u.name+'</div>'+
       '<div class="big">'+r.s.days+'</div><div class="biglbl">days logged</div>'+
-      '<div class="sub"><b>'+r.s.miles+'</b> mi logged · <b>'+r.s.weeks+'</b>/23 weeks touched<br>This week: <b>'+r.s.thisWk+'/7</b> days</div>';
+      '<div class="sub"><b>'+r.s.miles+'</b> mi logged · <b>'+r.s.weeks+'</b>/19 weeks touched<br>This week: <b>'+r.s.thisWk+'/7</b> days</div>';
     cardsEl.appendChild(el);
   });
   const g=$('lbGrid'); g.innerHTML='';
   rows.forEach(r=>{
     const rgb=hexToRgb(r.u.color), row=document.createElement('div'); row.className='lbgrow';
     let cells='';
-    for(let i=1;i<=23;i++){ const c=weekDone(r.d,i); const a=c>0?(0.14+0.86*c).toFixed(3):'0';
+    for(let i=1;i<=19;i++){ const c=weekDone(r.d,i); const a=c>0?(0.14+0.86*c).toFixed(3):'0';
       const bg=c>0?'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+a+')':'#F3ECDD';
       cells+='<div class="lbgc'+(i===cw?' cur':'')+'" style="background:'+bg+'" title="Week '+i+' · '+Math.round(c*7)+'/7 days"></div>'; }
     row.innerHTML='<div class="lbglabel"><span class="rdot" style="background:'+r.u.color+'"></span>'+r.u.name+'</div><div class="lbgcells">'+cells+'</div>';
