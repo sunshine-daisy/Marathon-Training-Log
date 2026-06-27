@@ -190,6 +190,10 @@
   .unit .u.sel{background:var(--teal); color:#fff}
   .dayreset{margin-left:auto; width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); font-size:15px; cursor:pointer; transition:.15s; line-height:1; display:flex; align-items:center; justify-content:center; flex:none}
   .dayreset:hover{background:var(--ember-soft); border-color:var(--ember); color:var(--ember-dk)}
+  .pacebadge{margin-top:9px; font-size:12.5px; line-height:1.45}
+  .pacebadge .pc-empty{color:var(--ink-soft)}
+  .pacebadge .pc-ok{color:#1f7a52; font-weight:700; background:#E6F5EC; border:1px solid #B6E2CB; padding:6px 11px; border-radius:10px; display:inline-block}
+  .pacebadge .pc-over{color:#9a5a12; font-weight:600; background:#FBF0DC; border:1px solid #EAD3A0; padding:6px 11px; border-radius:10px; display:inline-block}
   .milesauto{font-family:'Fraunces',serif; font-weight:900; font-size:30px; color:var(--teal-dk); line-height:1.05}
   .milesauto .hint{display:block; font-family:'Albert Sans'; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; text-transform:none; margin-top:3px}
   .rgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
@@ -409,9 +413,9 @@ const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 // per week: phase, weeks-to-go, run content for Mon / Wed / Sat (long)
 const PLAN = [
- {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 45s / walk 90s', wed:'20 min\nrun 45s / walk 90s', sat:'25 min\nrun 45s / walk 90s', note:'🗓️ <b>To-do soon:</b> email the race (<a href="mailto:info@beyondmonumental.org">info@beyondmonumental.org</a>) and ask the <b>deadline &amp; process to switch from full → half.</b> Get it in writing now — you\'re not deciding anything yet, you just want to know the cutoff.'},
- {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 1 / walk 90s', wed:'22 min\nrun 1 / walk 90s', sat:'28 min\nrun 1 / walk 90s'},
- {wk:3, ph:'Foundation', wtg:'16', mon:'24 min\nrun 1 / walk 1', wed:'24 min\nrun 1 / walk 1', sat:'32 min\nrun 1 / walk 1'},
+ {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 30s / walk 90s', wed:'20 min\nrun 30s / walk 90s', sat:'25 min\nrun 30s / walk 90s', note:'🗓️ <b>To-do soon:</b> email the race (<a href="mailto:info@beyondmonumental.org">info@beyondmonumental.org</a>) and ask the <b>deadline &amp; process to switch from full → half.</b> Get it in writing now — you\'re not deciding anything yet, you just want to know the cutoff.'},
+ {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 1 / walk 90s', wed:'22 min\nrun 1 / walk 90s', sat:'28 min\nrun 1 / walk 90s', note:'🔁 <b>The intervals are yours to adjust.</b> The run/walk numbers are a starting point, not a rule. If a run interval feels too hard, make it shorter — Galloway’s method actually favors <b>shorter</b> bursts (e.g. run 20–30s / walk 30–60s). Shorter, more frequent runs are often easier to sustain than longer ones. Find the ratio where you’re never gasping, and use that.'},
+ {wk:3, ph:'Foundation', wtg:'16', mon:'24 min\nrun 1 / walk 1', wed:'24 min\nrun 1 / walk 1', sat:'32 min\nrun 1 / walk 1', note:'📏 <b>Try a “Magic Mile.”</b> Galloway’s simple fitness check: warm up easy, then time yourself over <b>one mile</b> as briskly as you can comfortably go (run/walk is fine — no gasping). Note the time, and repeat it every 3–4 weeks. As that mile gets faster, it’s proof you’re getting fitter and a rough read on whether the 16:00 cutoff is in reach. Jot the time in your notes box each time.'},
  {wk:4, ph:'Foundation', wtg:'15', mon:'26 min\nrun 90s / walk 1', wed:'26 min\nrun 90s / walk 1', sat:'36 min\nrun 90s / walk 1'},
  {wk:5, ph:'Foundation', wtg:'14', mon:'28 min\nrun 2 / walk 1', wed:'28 min\nrun 2 / walk 1', sat:'40 min\nrun 2 / walk 1'},
  {wk:6, ph:'Foundation', wtg:'13', mon:'30 min\nrun 3 / walk 1', wed:'30 min\nrun 3 / walk 1', sat:'45 min\nrun 3 / walk 1'},
@@ -553,6 +557,11 @@ function renderModes(){
   document.querySelectorAll('.modebtn').forEach(b=>b.classList.toggle('active', b.dataset.mode===m));
 }
 
+function fmtPace(mp){ if(!isFinite(mp)||mp<=0) return '--:--'; let m=Math.floor(mp), s=Math.round((mp-m)*60); if(s===60){m++;s=0;} return m+':'+String(s).padStart(2,'0'); }
+function paceInfo(miles, totalMin){ if(!(miles>0)||!(totalMin>0)) return null; const pace=totalMin/miles, cutoff=16; return {pace, under: pace<=cutoff, diff: Math.abs(cutoff-pace)}; }
+function paceBadgeHTML(log){ const info=paceInfo(log&&log.miles, log&&log.totalMin); if(!info) return '<span class="pc-empty">Enter <b>mi</b> + <b>min</b> above to see your pace vs. the 16:00 cutoff</span>'; const p=fmtPace(info.pace), d=fmtPace(info.diff); if(info.under) return '<span class="pc-ok">⏱ '+p+' /mi · ✓ under the 16:00 cutoff by '+d+'/mi</span>'; return '<span class="pc-over">⏱ '+p+' /mi · '+d+'/mi over the cutoff — normal now, you\'re building toward sub-16:00</span>'; }
+function updatePace(box){ if(!box) return; const badge=box.parentNode.querySelector('.pacebadge'); if(!badge) return; const mi=parseFloat(box.querySelector('.mi').value), tt=parseFloat(box.querySelector('.tt').value); badge.innerHTML=paceBadgeHTML({miles:isNaN(mi)?null:mi, totalMin:isNaN(tt)?null:tt}); }
+
 function renderDays(){
   const p=PLAN[view-1], w=wkData(view), cells=dayCells(p);
   const grid=$('dayGrid'); grid.innerHTML='';
@@ -582,13 +591,15 @@ function renderDays(){
         <button class="dayreset" data-d="${idx}" title="Clear this day">↺</button>
       </div>
       ${showMetrics?`<div class="dmetrics" data-d="${idx}">
-        <label class="dnum">mi<input class="mi" type="number" inputmode="decimal" min="0" step="0.1" value="${log.miles!=null?log.miles:''}" placeholder="0"></label>
-        <label class="dnum">ran<input class="tm" type="number" inputmode="numeric" min="0" step="1" value="${log.time!=null?log.time:''}" placeholder="0"></label>
+        <label class="dnum" title="Total distance you covered (run + walk)">mi<input class="mi" type="number" inputmode="decimal" min="0" step="0.1" value="${log.miles!=null?log.miles:''}" placeholder="0"></label>
+        <label class="dnum" title="Total time for the whole session — used to figure your pace">min<input class="tt" type="number" inputmode="decimal" min="0" step="0.1" value="${log.totalMin!=null?log.totalMin:''}" placeholder="0"></label>
+        <label class="dnum" title="How long you actually ran — your stamina number">ran<input class="tm" type="number" inputmode="numeric" min="0" step="1" value="${log.time!=null?log.time:''}" placeholder="0"></label>
         <div class="unit">
           <button class="u ${unit==='sec'?'sel':''}" data-u="sec">sec</button>
           <button class="u ${unit==='min'?'sel':''}" data-u="min">min</button>
         </div>
-      </div>`:''}
+      </div>
+      <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>`:''}
       <textarea class="dnote" rows="1" data-d="${idx}" placeholder="${c.cat==='gym'?'What you lifted today…':'What you actually did…'}">${log.notes||''}</textarea>
     `;
     grid.appendChild(el);
@@ -597,7 +608,8 @@ function renderDays(){
   grid.querySelectorAll('.donebtn').forEach(b=>b.onclick=()=>{ const i=b.dataset.d, l=w.days[i]||(w.days[i]={}); l.done=!l.done; persist(); renderDays(); renderHeader(); });
   grid.querySelectorAll('.feels').forEach(g=>g.querySelectorAll('.feel').forEach(b=>b.onclick=()=>{ const i=g.dataset.d, l=w.days[i]||(w.days[i]={}); l.feel=(l.feel===b.dataset.f)?null:b.dataset.f; persist(); renderDays(); }));
   grid.querySelectorAll('.dnote').forEach(t=>t.oninput=()=>{ const i=t.dataset.d, l=w.days[i]||(w.days[i]={}); l.notes=t.value; persistQuiet(); });
-  grid.querySelectorAll('.dmetrics .mi').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.miles=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); softTotals(); });
+  grid.querySelectorAll('.dmetrics .mi').forEach(inp=>inp.oninput=()=>{ const box=inp.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.miles=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); softTotals(); updatePace(box); });
+  grid.querySelectorAll('.dmetrics .tt').forEach(inp=>inp.oninput=()=>{ const box=inp.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.totalMin=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); updatePace(box); });
   grid.querySelectorAll('.dmetrics .tm').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dmetrics').dataset.d, l=w.days[i]||(w.days[i]={}); l.time=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
   grid.querySelectorAll('.dmetrics .u').forEach(b=>b.onclick=()=>{ const box=b.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.timeUnit=b.dataset.u; persistQuiet(); box.querySelectorAll('.u').forEach(x=>x.classList.toggle('sel',x===b)); });
   grid.querySelectorAll('.dayreset').forEach(b=>b.onclick=()=>{ const i=b.dataset.d; if(confirm('Clear '+DAYS[+i]+'\'s log for this week?')){ w.days[i]={}; persist(); renderDays(); renderHeader(); softTotals(); } });
