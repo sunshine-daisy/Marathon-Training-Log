@@ -123,7 +123,7 @@
   .modebtn.active small{color:rgba(255,255,255,.85)}
 
   /* ---------- DAY GRID ---------- */
-  .days{display:grid; grid-template-columns:repeat(2,1fr); gap:13px; margin-bottom:24px}
+  .days{display:grid; grid-template-columns:1fr; gap:13px; margin-bottom:24px}
   .day{
     background:var(--paper); border:1px solid var(--line); border-radius:15px;
     padding:14px 15px 13px; position:relative; transition:.2s;
@@ -136,11 +136,13 @@
   .day.cat-long.done{background:linear-gradient(155deg,var(--green-soft),var(--ember-soft))}
   .day.cat-race{background:linear-gradient(145deg,#FFF1D9,#FBE6DC); border:2px solid var(--gold)}
   .day.cat-rest{background:#FAF6EE}
-  .dhead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
+  .dhead{display:flex; align-items:flex-start; justify-content:space-between; gap:14px 18px; flex-wrap:wrap; margin-bottom:12px}
+  .dhead-l{display:flex; flex-direction:column; gap:8px; min-width:150px; flex:1 1 auto}
+  .dhead-r{display:flex; flex-direction:column; align-items:flex-end; gap:9px; flex:0 1 auto}
   .dname{font-family:'Fraunces',serif; font-weight:700; font-size:16px; color:var(--ink)}
   .ddate{font-size:11.5px; color:var(--ink-soft); font-weight:500}
   .cattag{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:3px 9px; border-radius:20px; display:inline-flex; gap:5px; align-items:center}
-  .plan{font-size:14px; font-weight:600; color:var(--ink); min-height:20px; margin-bottom:11px; white-space:pre-line}
+  .plan{font-size:14px; font-weight:600; color:var(--ink); min-height:20px; margin-bottom:0; white-space:pre-line}
   .plan.tbd{color:var(--ink-soft); font-weight:500; font-style:italic}
   .longbadge{display:inline-block; font-size:9.5px; font-weight:800; letter-spacing:.1em; color:#fff; background:var(--ember); padding:2px 8px; border-radius:20px; vertical-align:middle; margin-left:6px}
   .dctrls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
@@ -169,7 +171,11 @@
   }
   .reflect::before{content:""; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,var(--teal),var(--ember),var(--gold))}
   .reflect h2{font-family:'Fraunces',serif; font-weight:700; font-size:22px; color:var(--teal-dk); margin-bottom:4px}
-  .reflect .sub{font-size:12.5px; color:var(--ink-soft); margin-bottom:16px}
+  .reflect .sub{font-size:12.5px; color:var(--ink-soft); margin-bottom:0}
+  .reflect-head{display:flex; align-items:flex-start; justify-content:space-between; gap:16px 24px; flex-wrap:wrap; margin-bottom:18px}
+  .reflect-title{flex:1 1 280px; min-width:240px}
+  .reflect-miles{flex:0 0 auto; text-align:right}
+  .reflect-miles label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); font-weight:600; margin-bottom:5px}
   .rrow{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:16px; align-items:flex-end}
   .rfield label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); font-weight:600; margin-bottom:7px}
   .rating{display:flex; gap:6px}
@@ -199,10 +205,12 @@
   .gymtoggle.on{background:#6B4A86; color:#fff; border-color:#6B4A86}
   .gymnote{flex:1; min-width:150px; font-family:'Albert Sans'; font-size:13px; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink)}
   .gymnote:focus{outline:none; border-color:#6B4A86; box-shadow:0 0 0 3px #EDE3F4}
+  .gymliftnote{display:block; width:100%; flex:none; margin-top:11px; border-color:#D8C7E6; background:#FBF8FD; color:#5a3f72}
+  .gymliftnote::placeholder{color:#9E84B8}
   .day input[type=number]::-webkit-outer-spin-button,
   .day input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
   .day input[type=number]{-moz-appearance:textfield; appearance:textfield}
-  .dcond{display:flex; align-items:center; gap:12px 18px; flex-wrap:wrap; margin-top:15px}
+  .dcond{display:flex; align-items:center; justify-content:flex-end; gap:12px 16px; flex-wrap:wrap; margin-top:0}
   .cnum{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
   .cnum input{font-family:'Albert Sans'; font-size:13.5px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:7px 9px; background:#fff}
   .cnum input[type=number]{width:54px; text-align:center}
@@ -406,16 +414,24 @@
   <div class="days" id="dayGrid"></div>
 
   <section class="reflect">
-    <h2 id="refTitle">Week 1 — Reflection</h2>
-    <div class="sub">Close out the week. A couple of honest lines now will be gold when you look back in November.</div>
+    <div class="reflect-head">
+      <div class="reflect-title">
+        <h2 id="refTitle">Week 1 — Reflection</h2>
+        <div class="sub">Close out the week. A couple of honest lines now will be gold when you look back in November.</div>
+      </div>
+      <div class="reflect-miles">
+        <label>Total miles this week (auto)</label>
+        <div class="milesauto"><span id="refMilesAuto">0</span> mi<span class="hint">summed from your daily miles</span></div>
+      </div>
+    </div>
     <div class="rrow">
       <div class="rfield">
         <label>How did the week feel? (1–5)</label>
         <div class="rating" id="rating"></div>
       </div>
       <div class="rfield">
-        <label>Total miles this week (auto)</label>
-        <div class="milesauto"><span id="refMilesAuto">0</span> mi<span class="hint">added up from your daily miles</span></div>
+        <label>Weekly weight (lb)</label>
+        <input class="milesin" id="refWeight" type="number" inputmode="decimal" min="0" step="0.1" placeholder="—">
       </div>
     </div>
     <div class="rgrid">
@@ -627,10 +643,20 @@ function renderDays(){
     const unit = log.timeUnit||defUnit;
     el.innerHTML=`
       <div class="dhead">
-        <div><div class="dname">${DAYS[idx]}</div><div class="ddate">${fmtDate(dt)}</div></div>
-        <span class="cattag" style="background:${meta.c};color:${meta.f}">${meta.i} ${meta.t}</span>
+        <div class="dhead-l">
+          <div class="dhead-name"><div class="dname">${DAYS[idx]}</div><div class="ddate">${fmtDate(dt)}</div></div>
+          <div class="plan ${c.cat==='tbd'?'tbd':''}">${c.plan}${longBadge}</div>
+        </div>
+        <div class="dhead-r">
+          <span class="cattag" style="background:${meta.c};color:${meta.f}">${meta.i} ${meta.t}</span>
+          ${showMetrics?`<div class="dcond" data-d="${idx}">
+            <label class="cnum" title="What time you ran">time<input type="time" class="cwhen" value="${log.timeOfDay||''}"></label>
+            <label class="cnum" title="Temperature">temp<input class="ctemp" type="number" inputmode="numeric" min="0" value="${log.temp!=null?log.temp:''}" placeholder="°F"></label>
+            <label class="cnum" title="Humidity">humid<input class="chum" type="number" inputmode="numeric" min="0" max="100" value="${log.humidity!=null?log.humidity:''}" placeholder="%"></label>
+            <label class="cnum" title="Feels-like temperature">feels<input class="cfeel" type="number" inputmode="numeric" min="0" value="${log.feelsLike!=null?log.feelsLike:''}" placeholder="°F"></label>
+          </div>`:''}
+        </div>
       </div>
-      <div class="plan ${c.cat==='tbd'?'tbd':''}">${c.plan}${longBadge}</div>
       <div class="dctrls">
         <button class="donebtn" data-d="${idx}">${log.done?'✓ Done':'Mark done'}</button>
         <div class="feels" data-d="${idx}">
@@ -649,18 +675,13 @@ function renderDays(){
           <button class="u ${unit==='min'?'sel':''}" data-u="min">min</button>
         </div>
       </div>
-      <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>
-      <div class="dcond" data-d="${idx}">
-        <label class="cnum" title="What time you ran">time<input type="time" class="cwhen" value="${log.timeOfDay||''}"></label>
-        <label class="cnum" title="Temperature">temp<input class="ctemp" type="number" inputmode="numeric" min="0" value="${log.temp!=null?log.temp:''}" placeholder="°F"></label>
-        <label class="cnum" title="Humidity">humid<input class="chum" type="number" inputmode="numeric" min="0" max="100" value="${log.humidity!=null?log.humidity:''}" placeholder="%"></label>
-        <label class="cnum" title="Feels-like temperature">feels<input class="cfeel" type="number" inputmode="numeric" min="0" value="${log.feelsLike!=null?log.feelsLike:''}" placeholder="°F"></label>
-      </div>`:''}
+      <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>`:''}
       ${showGymAdd?`<div class="gymadd" data-d="${idx}">
         <button class="gymtoggle ${log.gymDone?'on':''}" data-d="${idx}">💪 ${log.gymDone?'Gym done':'+ Add gym'}</button>
         ${log.gymDone?`<input class="gymnote" data-d="${idx}" placeholder="What you lifted…" value="${(log.gymNotes||'').replace(/"/g,'&quot;')}">`:''}
       </div>`:''}
-      <textarea class="dnote" rows="1" data-d="${idx}" placeholder="${c.cat==='gym'?'What you lifted today…':'What you actually did…'}">${log.notes||''}</textarea>
+      ${c.cat==='gym'?`<input class="gymnote gymliftnote" data-d="${idx}" placeholder="💪 What you lifted today…" value="${(log.gymNotes||'').replace(/"/g,'&quot;')}">`:''}
+      <textarea class="dnote" rows="1" data-d="${idx}" placeholder="${c.cat==='gym'?'Anything else? — walk, swim, dog walk…':(c.cat==='rest'?'Notes…':'What you actually did…')}">${log.notes||''}</textarea>
     `;
     grid.appendChild(el);
   });
@@ -674,7 +695,8 @@ function renderDays(){
   grid.querySelectorAll('.dmetrics .u').forEach(b=>b.onclick=()=>{ const box=b.closest('.dmetrics'), i=box.dataset.d, l=w.days[i]||(w.days[i]={}); l.timeUnit=b.dataset.u; persistQuiet(); box.querySelectorAll('.u').forEach(x=>x.classList.toggle('sel',x===b)); });
   grid.querySelectorAll('.dayreset').forEach(b=>b.onclick=()=>{ const i=b.dataset.d; if(confirm('Clear '+DAYS[+i]+'\'s log for this week?')){ w.days[i]={}; persist(); renderDays(); renderHeader(); softTotals(); } });
   grid.querySelectorAll('.gymtoggle').forEach(b=>b.onclick=()=>{ const i=b.dataset.d, l=w.days[i]||(w.days[i]={}); l.gymDone=!l.gymDone; persist(); renderDays(); });
-  grid.querySelectorAll('.gymnote').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.gymadd').dataset.d, l=w.days[i]||(w.days[i]={}); l.gymNotes=inp.value; persistQuiet(); });
+  grid.querySelectorAll('.gymadd .gymnote').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.gymadd').dataset.d, l=w.days[i]||(w.days[i]={}); l.gymNotes=inp.value; persistQuiet(); });
+  grid.querySelectorAll('.gymliftnote').forEach(inp=>inp.oninput=()=>{ const i=inp.dataset.d, l=w.days[i]||(w.days[i]={}); l.gymNotes=inp.value; persistQuiet(); });
   grid.querySelectorAll('.dcond .cwhen').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.timeOfDay=inp.value||null; persistQuiet(); });
   grid.querySelectorAll('.dcond .ctemp').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.temp=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
   grid.querySelectorAll('.dcond .chum').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.humidity=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
@@ -687,7 +709,7 @@ function renderReflect(){
   $('refTitle').textContent='Week '+view+' — Reflection';
   const rt=$('rating'); rt.innerHTML='';
   for(let i=1;i<=5;i++){ const d=document.createElement('button'); d.className='dot'+(r.rating>=i?' on':''); d.textContent=i; d.onclick=()=>{ r.rating=(r.rating===i?0:i); persist(); renderReflect(); }; rt.appendChild(d); }
-  $('refMilesAuto').textContent=weekMiles(w); $('refWins').value=r.wins||''; $('refLong').value=r.long||''; $('refAdjust').value=r.adjust||'';
+  $('refMilesAuto').textContent=weekMiles(w); $('refWins').value=r.wins||''; $('refLong').value=r.long||''; $('refAdjust').value=r.adjust||''; $('refWeight').value=(r.weight!=null?r.weight:'');
 }
 
 function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); cloudAutoPush(); }
@@ -700,6 +722,7 @@ $('prevWk').onclick=()=>{ if(view>1){view--; persist(); renderAll();} };
 $('nextWk').onclick=()=>{ if(view<19){view++; persist(); renderAll();} };
 $('todayBtn').onclick=()=>{ view=currentWeek(); persist(); renderAll(); };
 ['refWins','refLong','refAdjust'].forEach(id=>{ const f={refWins:'wins',refLong:'long',refAdjust:'adjust'}[id]; $(id).oninput=()=>{ wkData(view).ref[f]=$(id).value; persistQuiet(); }; });
+$('refWeight').oninput=()=>{ wkData(view).ref.weight=($('refWeight').value===''?null:parseFloat($('refWeight').value)); persistQuiet(); };
 
 $('exportBtn').onclick=()=>{ const blob=new Blob([JSON.stringify(ROOT,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='marathon-log-backup.json'; a.click(); };
 $('importBtn').onclick=()=>$('importFile').click();
