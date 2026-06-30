@@ -199,6 +199,12 @@
   .gymtoggle.on{background:#6B4A86; color:#fff; border-color:#6B4A86}
   .gymnote{flex:1; min-width:150px; font-family:'Albert Sans'; font-size:13px; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink)}
   .gymnote:focus{outline:none; border-color:#6B4A86; box-shadow:0 0 0 3px #EDE3F4}
+  .dcond{display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap; margin-top:11px}
+  .cnum{display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .cnum input{font-family:'Albert Sans'; font-size:13.5px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff}
+  .cnum input[type=number]{width:48px; text-align:right}
+  .cnum input[type=time]{width:108px}
+  .cnum input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
   .guidecard{background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px; margin:0 0 20px; box-shadow:0 10px 30px rgba(31,111,120,.07)}
   .gintro{font-size:13.5px; color:var(--ink-soft); margin:2px 0 14px; line-height:1.5}
   .gphase{padding:12px 0; border-top:1px solid var(--line)}
@@ -640,7 +646,13 @@ function renderDays(){
           <button class="u ${unit==='min'?'sel':''}" data-u="min">min</button>
         </div>
       </div>
-      <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>`:''}
+      <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>
+      <div class="dcond" data-d="${idx}">
+        <label class="cnum" title="What time you ran">time<input type="time" class="cwhen" value="${log.timeOfDay||''}"></label>
+        <label class="cnum" title="Temperature">temp<input class="ctemp" type="number" inputmode="numeric" value="${log.temp!=null?log.temp:''}" placeholder="°F"></label>
+        <label class="cnum" title="Humidity">humid<input class="chum" type="number" inputmode="numeric" value="${log.humidity!=null?log.humidity:''}" placeholder="%"></label>
+        <label class="cnum" title="Feels-like temperature">feels<input class="cfeel" type="number" inputmode="numeric" value="${log.feelsLike!=null?log.feelsLike:''}" placeholder="°F"></label>
+      </div>`:''}
       ${showGymAdd?`<div class="gymadd" data-d="${idx}">
         <button class="gymtoggle ${log.gymDone?'on':''}" data-d="${idx}">💪 ${log.gymDone?'Gym done':'+ Add gym'}</button>
         ${log.gymDone?`<input class="gymnote" data-d="${idx}" placeholder="What you lifted…" value="${(log.gymNotes||'').replace(/"/g,'&quot;')}">`:''}
@@ -660,6 +672,10 @@ function renderDays(){
   grid.querySelectorAll('.dayreset').forEach(b=>b.onclick=()=>{ const i=b.dataset.d; if(confirm('Clear '+DAYS[+i]+'\'s log for this week?')){ w.days[i]={}; persist(); renderDays(); renderHeader(); softTotals(); } });
   grid.querySelectorAll('.gymtoggle').forEach(b=>b.onclick=()=>{ const i=b.dataset.d, l=w.days[i]||(w.days[i]={}); l.gymDone=!l.gymDone; persist(); renderDays(); });
   grid.querySelectorAll('.gymnote').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.gymadd').dataset.d, l=w.days[i]||(w.days[i]={}); l.gymNotes=inp.value; persistQuiet(); });
+  grid.querySelectorAll('.dcond .cwhen').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.timeOfDay=inp.value||null; persistQuiet(); });
+  grid.querySelectorAll('.dcond .ctemp').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.temp=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
+  grid.querySelectorAll('.dcond .chum').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.humidity=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
+  grid.querySelectorAll('.dcond .cfeel').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.feelsLike=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
 }
 function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); }
 
