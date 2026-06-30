@@ -183,7 +183,7 @@
   .dmiles input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
   .dmetrics{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:11px}
   .dnum{display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em}
-  .dnum input{width:56px; font-family:'Albert Sans'; font-size:14px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff; text-align:right}
+  .dnum input{width:62px; font-family:'Albert Sans'; font-size:14px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff; text-align:right}
   .dnum input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
   .unit{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden}
   .unit .u{font-family:'Albert Sans'; font-size:11px; font-weight:700; padding:6px 10px; background:#fff; color:var(--ink-soft); cursor:pointer; border:none; transition:.12s}
@@ -199,11 +199,14 @@
   .gymtoggle.on{background:#6B4A86; color:#fff; border-color:#6B4A86}
   .gymnote{flex:1; min-width:150px; font-family:'Albert Sans'; font-size:13px; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink)}
   .gymnote:focus{outline:none; border-color:#6B4A86; box-shadow:0 0 0 3px #EDE3F4}
-  .dcond{display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap; margin-top:11px}
-  .cnum{display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
-  .cnum input{font-family:'Albert Sans'; font-size:13.5px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:6px 8px; background:#fff}
-  .cnum input[type=number]{width:48px; text-align:right}
-  .cnum input[type=time]{width:108px}
+  .day input[type=number]::-webkit-outer-spin-button,
+  .day input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+  .day input[type=number]{-moz-appearance:textfield; appearance:textfield}
+  .dcond{display:flex; align-items:center; gap:12px 18px; flex-wrap:wrap; margin-top:15px}
+  .cnum{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .cnum input{font-family:'Albert Sans'; font-size:13.5px; font-weight:700; color:var(--teal-dk); border:1px solid var(--line); border-radius:9px; padding:7px 9px; background:#fff}
+  .cnum input[type=number]{width:54px; text-align:center}
+  .cnum input[type=time]{width:124px}
   .cnum input:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px var(--teal-soft)}
   .guidecard{background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px; margin:0 0 20px; box-shadow:0 10px 30px rgba(31,111,120,.07)}
   .gintro{font-size:13.5px; color:var(--ink-soft); margin:2px 0 14px; line-height:1.5}
@@ -649,9 +652,9 @@ function renderDays(){
       <div class="pacebadge" data-d="${idx}">${paceBadgeHTML(log)}</div>
       <div class="dcond" data-d="${idx}">
         <label class="cnum" title="What time you ran">time<input type="time" class="cwhen" value="${log.timeOfDay||''}"></label>
-        <label class="cnum" title="Temperature">temp<input class="ctemp" type="number" inputmode="numeric" value="${log.temp!=null?log.temp:''}" placeholder="°F"></label>
-        <label class="cnum" title="Humidity">humid<input class="chum" type="number" inputmode="numeric" value="${log.humidity!=null?log.humidity:''}" placeholder="%"></label>
-        <label class="cnum" title="Feels-like temperature">feels<input class="cfeel" type="number" inputmode="numeric" value="${log.feelsLike!=null?log.feelsLike:''}" placeholder="°F"></label>
+        <label class="cnum" title="Temperature">temp<input class="ctemp" type="number" inputmode="numeric" min="0" value="${log.temp!=null?log.temp:''}" placeholder="°F"></label>
+        <label class="cnum" title="Humidity">humid<input class="chum" type="number" inputmode="numeric" min="0" max="100" value="${log.humidity!=null?log.humidity:''}" placeholder="%"></label>
+        <label class="cnum" title="Feels-like temperature">feels<input class="cfeel" type="number" inputmode="numeric" min="0" value="${log.feelsLike!=null?log.feelsLike:''}" placeholder="°F"></label>
       </div>`:''}
       ${showGymAdd?`<div class="gymadd" data-d="${idx}">
         <button class="gymtoggle ${log.gymDone?'on':''}" data-d="${idx}">💪 ${log.gymDone?'Gym done':'+ Add gym'}</button>
