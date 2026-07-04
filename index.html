@@ -224,6 +224,24 @@
   .gph-tag{font-family:'Albert Sans'; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; padding:3px 9px; border-radius:999px}
   .gphase p{font-size:13px; color:var(--ink); line-height:1.5; margin:0}
   .gnote{margin:14px 0 0; font-size:12.5px; line-height:1.5; color:#5a4a1f; background:linear-gradient(135deg,#FFF7E4,#FBEEC9); border:1px solid #E8D08A; border-radius:12px; padding:11px 14px}
+  .rltotals{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px}
+  .rltot{flex:1 1 auto; min-width:96px; background:linear-gradient(135deg,#fff,var(--teal-soft)); border:1px solid var(--line); border-radius:14px; padding:12px 14px; text-align:center}
+  .rltot-v{font-family:'Fraunces',serif; font-weight:900; font-size:26px; color:var(--teal-dk); line-height:1}
+  .rltot-k{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-top:5px}
+  .rlwrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  .rltable{border-collapse:collapse; width:100%; min-width:600px; font-size:13px}
+  .rltable th,.rltable td{padding:9px 11px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap}
+  .rltable thead th{font-family:'Albert Sans'; font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); font-weight:800; border-bottom:2px solid var(--line)}
+  .rl-sortable{cursor:pointer; user-select:none; color:var(--teal-dk)}
+  .rl-sortable:hover{color:var(--ember)}
+  .rltable tbody tr:hover{background:var(--teal-soft)}
+  .rl-when-d{font-family:'Fraunces',serif; font-weight:700; font-size:13.5px; color:var(--ink)}
+  .rl-when-s{font-size:10.5px; color:var(--ink-soft); margin-top:1px}
+  .rl-mi{font-weight:700; color:var(--teal-dk)}
+  .rl-ok{color:#1f7a52; font-weight:700}
+  .rl-over{color:#9a5a12; font-weight:700}
+  .rl-long{display:inline-block; font-size:8.5px; font-weight:800; letter-spacing:.06em; color:#fff; background:var(--ember); padding:1px 6px; border-radius:20px; margin-left:6px; vertical-align:middle}
+  .rl-empty{padding:22px; text-align:center; color:var(--ink-soft); font-size:13.5px}
   .milesauto{font-family:'Fraunces',serif; font-weight:900; font-size:30px; color:var(--teal-dk); line-height:1.05}
   .milesauto .hint{display:block; font-family:'Albert Sans'; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; text-transform:none; margin-top:3px}
   .rgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
@@ -325,6 +343,7 @@
     <div class="profiles" id="profiles"></div>
     <button class="lbtoggle" id="lbToggle">🏅 Family leaderboard</button>
     <button class="lbtoggle" id="guideToggle">📋 Plan guide</button>
+    <button class="lbtoggle" id="runlogToggle">📖 Run log</button>
   </div>
 
   <section class="lbcard" id="lbCard" hidden>
@@ -368,6 +387,19 @@
       <p>Ease off so you arrive <b>fresh</b>: the long run drops 12 → 8 → race. Rest is the secret weapon — you bank the fitness and let your body recharge for Nov 7.</p>
     </div>
     <p class="gnote">💡 The number to beat is <b>16:00/mile</b> (the 7-hour limit). Your job over the summer is simple: spend more time in your running bursts — already faster than 16:00 — and less time walking, so your average pace drifts under the line by fall.</p>
+  </section>
+
+  <section class="lbcard" id="runlogCard" hidden>
+    <div class="lbhead">
+      <h3>📖 Run Log</h3>
+      <div class="lbbtns">
+        <button class="tbtn" id="runlogSort">↕ Sort by date</button>
+        <button class="tbtn" id="runlogClose">Close</button>
+      </div>
+    </div>
+    <div class="lbtag">Every run <b id="runlogWho">Lilian</b> has marked done — auto-filled, runs only. Tap <b>When</b> to flip the order.</div>
+    <div class="rltotals" id="runlogTotals"></div>
+    <div class="rlwrap"><table class="rltable" id="runlogTable"></table></div>
   </section>
 
   <header class="top">
@@ -702,7 +734,7 @@ function renderDays(){
   grid.querySelectorAll('.dcond .chum').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.humidity=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
   grid.querySelectorAll('.dcond .cfeel').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.feelsLike=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
 }
-function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); }
+function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); }
 
 function renderReflect(){
   const w=wkData(view), r=w.ref||(w.ref={});
@@ -712,7 +744,7 @@ function renderReflect(){
   $('refMilesAuto').textContent=weekMiles(w); $('refWins').value=r.wins||''; $('refLong').value=r.long||''; $('refAdjust').value=r.adjust||''; $('refWeight').value=(r.weight!=null?r.weight:'');
 }
 
-function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); cloudAutoPush(); }
+function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); cloudAutoPush(); }
 let qt; function persistQuiet(){ DATA.view=view; DATA.updatedAt=Date.now(); clearTimeout(qt); qt=setTimeout(()=>store.save(),400); cloudAutoPush(); }
 
 function renderAll(){ renderWeekNav(); renderDays(); renderReflect(); renderHeader(); renderHeatmap(); }
@@ -832,6 +864,7 @@ function switchUser(id){
   active=id; ROOT.activeUser=id; DATA=ROOT.users[id];
   view=DATA.view||currentWeek();
   store.save(); applyAccent(); renderProfiles(); renderAll(); cloudAutoPull();
+  const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog();
 }
 
 /* ============ FAMILY LEADERBOARD ============ */
@@ -890,14 +923,81 @@ async function cloudFetchAll(){
   }catch(e){ lbStatus('⚠ '+e.message+' — showing what\'s on this device.','err'); renderLeaderboard(); }
 }
 function openLeaderboard(){
-  $('lbCard').hidden=false; renderLeaderboard(); window.scrollTo({top:0,behavior:'smooth'});
+  $('lbCard').hidden=false; $('guideCard').hidden=true; $('runlogCard').hidden=true; renderLeaderboard(); window.scrollTo({top:0,behavior:'smooth'});
   const c=cloudCfg(); if(c.url&&c.code) cloudFetchAll();
   else lbStatus('Showing this device only — set up cloud sync to pull all three runners.','muted');
 }
 function closeLeaderboard(){ $('lbCard').hidden=true; }
 $('lbToggle').onclick=()=>{ $('lbCard').hidden ? openLeaderboard() : closeLeaderboard(); };
-$('guideToggle').onclick=()=>{ const g=$('guideCard'); const willShow=g.hidden; g.hidden=!willShow; if(willShow){ $('lbCard').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); } };
+$('guideToggle').onclick=()=>{ const g=$('guideCard'); const willShow=g.hidden; g.hidden=!willShow; if(willShow){ $('lbCard').hidden=true; $('runlogCard').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); } };
 $('guideClose').onclick=()=>{ $('guideCard').hidden=true; };
+
+/* ============ RUN LOG ============ */
+let runLogDesc=true;
+const FEELEMO={rough:'😣',ok:'😐',great:'😄'};
+function gatherRuns(u){
+  const out=[];
+  if(!u||!u.weeks) return out;
+  for(let wk=1;wk<=19;wk++){
+    const w=u.weeks[wk]; if(!w||!w.days) continue;
+    const cells=dayCells(PLAN[wk-1]);
+    for(let di=0;di<7;di++){
+      const c=cells[di]; if(!['run','long','race'].includes(c.cat)) continue;
+      const log=w.days[di]; if(!log||!log.done) continue;
+      out.push({wk, di, dt:dateFor(wk,di), cat:c.cat,
+        miles:(log.miles!=null?log.miles:null), totalMin:(log.totalMin!=null?log.totalMin:null),
+        ran:(log.time!=null?log.time:null), ranUnit:log.timeUnit||((PLAN[wk-1].wk<=5)?'sec':'min'),
+        feel:log.feel||null, temp:(log.temp!=null?log.temp:null), humidity:(log.humidity!=null?log.humidity:null), feelsLike:(log.feelsLike!=null?log.feelsLike:null)});
+    }
+  }
+  return out;
+}
+function renderRunLog(){
+  const who=$('runlogWho'); if(who) who.textContent=userName(active);
+  const runs=gatherRuns(DATA);
+  runs.sort((a,b)=> runLogDesc ? b.dt-a.dt : a.dt-b.dt);
+  let n=runs.length, tMiles=0, tMin=0, tMipace=0;
+  runs.forEach(r=>{ if(r.miles!=null) tMiles+=r.miles; if(r.miles!=null&&r.totalMin!=null){ tMin+=r.totalMin; tMipace+=r.miles; } });
+  const avg = tMipace>0 ? tMin/tMipace : null;
+  $('runlogTotals').innerHTML =
+    '<div class="rltot"><div class="rltot-v">'+n+'</div><div class="rltot-k">runs done</div></div>'+
+    '<div class="rltot"><div class="rltot-v">'+(Math.round(tMiles*10)/10)+'</div><div class="rltot-k">total miles</div></div>'+
+    '<div class="rltot"><div class="rltot-v">'+(avg?fmtPace(avg):'--:--')+'</div><div class="rltot-k">avg pace /mi</div></div>';
+  const arrow = runLogDesc ? '▼' : '▲';
+  let html='<thead><tr><th class="rl-sortable" id="rlWhenH">When '+arrow+'</th><th>Miles</th><th>Time</th><th>Pace</th><th>vs 16:00</th><th>Ran</th><th>Feel</th><th>Weather</th></tr></thead><tbody>';
+  if(!runs.length){
+    html+='<tr><td colspan="8"><div class="rl-empty">No runs logged yet — mark a run <b>done</b> and it\'ll show up here automatically.</div></td></tr>';
+  } else {
+    runs.forEach(r=>{
+      const info=paceInfo(r.miles, r.totalMin);
+      const longTag = r.cat==='long'?'<span class="rl-long">LONG</span>':(r.cat==='race'?'<span class="rl-long">RACE</span>':'');
+      const paceC = info?fmtPace(info.pace):'—';
+      const vsC = info?(info.under?'<span class="rl-ok">✓ '+fmtPace(info.diff)+'</span>':'<span class="rl-over">▲ '+fmtPace(info.diff)+'</span>'):'—';
+      const timeC = r.totalMin!=null?fmtPace(r.totalMin):'—';
+      const ranC = r.ran!=null?(r.ran+(r.ranUnit==='sec'?'s':'m')):'—';
+      const feelC = r.feel?FEELEMO[r.feel]:'—';
+      let wp=[]; if(r.feelsLike!=null) wp.push(r.feelsLike+'°'); else if(r.temp!=null) wp.push(r.temp+'°'); if(r.humidity!=null) wp.push(r.humidity+'%');
+      const wC = wp.length?wp.join(' · '):'—';
+      html+='<tr>'+
+        '<td><div class="rl-when-d">'+fmtDate(r.dt)+longTag+'</div><div class="rl-when-s">Wk'+r.wk+' · '+DAYS[r.di]+'</div></td>'+
+        '<td class="rl-mi">'+(r.miles!=null?r.miles:'—')+'</td>'+
+        '<td>'+timeC+'</td>'+
+        '<td>'+paceC+'</td>'+
+        '<td>'+vsC+'</td>'+
+        '<td>'+ranC+'</td>'+
+        '<td>'+feelC+'</td>'+
+        '<td>'+wC+'</td>'+
+      '</tr>';
+    });
+  }
+  html+='</tbody>';
+  $('runlogTable').innerHTML=html;
+  const wh=$('rlWhenH'); if(wh) wh.onclick=()=>{ runLogDesc=!runLogDesc; renderRunLog(); };
+}
+function openRunLog(){ $('runlogCard').hidden=false; $('lbCard').hidden=true; $('guideCard').hidden=true; renderRunLog(); window.scrollTo({top:0,behavior:'smooth'}); }
+$('runlogToggle').onclick=()=>{ const c=$('runlogCard'); c.hidden ? openRunLog() : (c.hidden=true); };
+$('runlogClose').onclick=()=>{ $('runlogCard').hidden=true; };
+$('runlogSort').onclick=()=>{ runLogDesc=!runLogDesc; renderRunLog(); };
 $('lbClose').onclick=closeLeaderboard;
 $('lbRefresh').onclick=cloudFetchAll;
 
