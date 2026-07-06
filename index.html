@@ -511,7 +511,7 @@ const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 // per week: phase, weeks-to-go, run content for Mon / Wed / Sat (long)
 const PLAN = [
  {wk:1, ph:'Foundation', wtg:'18', mon:'20 min\nrun 30s / walk 90s', wed:'20 min\nrun 30s / walk 90s', sat:'25 min\nrun 30s / walk 90s', note:'🗓️ <b>To-do soon:</b> email the race (<a href="mailto:info@beyondmonumental.org">info@beyondmonumental.org</a>) and ask the <b>deadline &amp; process to switch from full → half.</b> Get it in writing now — you\'re not deciding anything yet, you just want to know the cutoff.'},
- {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 45s / walk 75s', wed:'22 min\nrun 45s / walk 75s', sat:'28 min\nrun 45s / walk 75s', note:'🔁 <b>The intervals are yours to adjust.</b> The run/walk numbers are a starting point, not a rule. If a run interval feels too hard, make it shorter — Galloway’s method actually favors <b>shorter</b> bursts (e.g. run 20–30s / walk 30–60s). Shorter, more frequent runs are often easier to sustain than longer ones. Find the ratio where you’re never gasping, and use that.'},
+ {wk:2, ph:'Foundation', wtg:'17', mon:'22 min\nrun 45s / walk 60s', wed:'22 min\nrun 45s / walk 60s', sat:'28 min\nrun 45s / walk 60s', note:'🔁 <b>The intervals are yours to adjust.</b> The run/walk numbers are a starting point, not a rule. If a run interval feels too hard, make it shorter — Galloway’s method actually favors <b>shorter</b> bursts (e.g. run 20–30s / walk 30–60s). Shorter, more frequent runs are often easier to sustain than longer ones. Find the ratio where you’re never gasping, and use that.'},
  {wk:3, ph:'Foundation', wtg:'16', mon:'24 min\nrun 1 / walk 1', wed:'24 min\nrun 1 / walk 1', sat:'32 min\nrun 1 / walk 1', note:'📏 <b>Try a “Magic Mile.”</b> Galloway’s simple fitness check: warm up easy, then time yourself over <b>one mile</b> as briskly as you can comfortably go (run/walk is fine — no gasping). Note the time, and repeat it every 3–4 weeks. As that mile gets faster, it’s proof you’re getting fitter and a rough read on whether the 16:00 cutoff is in reach. Jot the time in your notes box each time.'},
  {wk:4, ph:'Foundation', wtg:'15', mon:'26 min\nrun 90s / walk 1', wed:'26 min\nrun 90s / walk 1', sat:'36 min\nrun 90s / walk 1'},
  {wk:5, ph:'Foundation', wtg:'14', mon:'28 min\nrun 2 / walk 1', wed:'28 min\nrun 2 / walk 1', sat:'40 min\nrun 2 / walk 1'},
@@ -521,7 +521,7 @@ const PLAN = [
  {wk:9, ph:'Build', wtg:'10', mon:'2.5 mi', wed:'3 mi', sat:'6 mi'},
  {wk:10, ph:'Build', wtg:'9', mon:'2.5 mi', wed:'3 mi', sat:'7 mi'},
  {wk:11, ph:'Build', wtg:'8', mon:'3 mi', wed:'3.5 mi', sat:'8 mi'},
- {wk:12, ph:'Build', wtg:'7', mon:'3 mi', wed:'3.5 mi', sat:'6 mi\n(cutback)'},
+ {wk:12, ph:'Build', wtg:'7', mon:'3 mi', wed:'3.5 mi', sat:'6 mi\n(cutback)', note:'🎽 <b>The Opening Act 5K — Carmel · Sun Sept 20</b> (run/walk, kicks off PorchFest). Your low-stakes dress rehearsal: practice the race-morning routine — parking, bib, start-line buzz, fueling — on a short, festive course right next door. Register early. It lands in your cutback week, so it fits with room to spare.'},
  {wk:13, ph:'Go Long', wtg:'6', mon:'3 mi', wed:'4 mi', sat:'10 mi'},
  {wk:14, ph:'Go Long', wtg:'5', mon:'3 mi', wed:'4 mi', sat:'12 mi', note:'🤔 <b>Decision window opens.</b> How did today\'s 12-miler feel? Start watching your run/walk pace — the race cutoff is 16:00/mile. No decision yet; just notice how your body\'s responding.'},
  {wk:15, ph:'Go Long', wtg:'4', mon:'3 mi', wed:'4 mi', sat:'15 mi', note:'🤔 <b>Full vs. half check-in.</b> If the long runs are flowing and you\'re holding under ~16:00/mile, lean toward the full. If they\'re a grind, the half is a strong, smart finish. You\'ll make the real call next week.'},
@@ -934,6 +934,7 @@ $('guideClose').onclick=()=>{ $('guideCard').hidden=true; };
 
 /* ============ RUN LOG ============ */
 let runLogDesc=true;
+function fmtDur(s){ s=Math.round(s); if(s<=0) return '0:00'; const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60; return h>0 ? h+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0') : m+':'+String(ss).padStart(2,'0'); }
 const FEELEMO={rough:'😣',ok:'😐',great:'😄'};
 function gatherRuns(u){
   const out=[];
@@ -956,12 +957,13 @@ function renderRunLog(){
   const who=$('runlogWho'); if(who) who.textContent=userName(active);
   const runs=gatherRuns(DATA);
   runs.sort((a,b)=> runLogDesc ? b.dt-a.dt : a.dt-b.dt);
-  let n=runs.length, tMiles=0, tMin=0, tMipace=0;
-  runs.forEach(r=>{ if(r.miles!=null) tMiles+=r.miles; if(r.miles!=null&&r.totalMin!=null){ tMin+=r.totalMin; tMipace+=r.miles; } });
+  let n=runs.length, tMiles=0, tMin=0, tMipace=0, tRunSec=0;
+  runs.forEach(r=>{ if(r.miles!=null) tMiles+=r.miles; if(r.miles!=null&&r.totalMin!=null){ tMin+=r.totalMin; tMipace+=r.miles; } if(r.ran!=null){ tRunSec += (r.ranUnit==='min'? r.ran*60 : r.ran); } });
   const avg = tMipace>0 ? tMin/tMipace : null;
   $('runlogTotals').innerHTML =
     '<div class="rltot"><div class="rltot-v">'+n+'</div><div class="rltot-k">runs done</div></div>'+
     '<div class="rltot"><div class="rltot-v">'+(Math.round(tMiles*10)/10)+'</div><div class="rltot-k">total miles</div></div>'+
+    '<div class="rltot"><div class="rltot-v">'+fmtDur(tRunSec)+'</div><div class="rltot-k">total run time</div></div>'+
     '<div class="rltot"><div class="rltot-v">'+(avg?fmtPace(avg):'--:--')+'</div><div class="rltot-k">avg pace /mi</div></div>';
   const arrow = runLogDesc ? '▼' : '▲';
   let html='<thead><tr><th class="rl-sortable" id="rlWhenH">When '+arrow+'</th><th>Miles</th><th>Time</th><th>Pace</th><th>vs 16:00</th><th>Ran</th><th>Feel</th><th>Weather</th></tr></thead><tbody>';
