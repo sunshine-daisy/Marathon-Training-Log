@@ -485,9 +485,10 @@
     <div class="cloudbtns">
       <button class="tbtn cloudbtn" id="cloudSave">⬆ Save to cloud</button>
       <button class="tbtn cloudbtn" id="cloudLoad">⬇ Load from cloud</button>
+      <button class="tbtn cloudbtn" id="cloudLink">🔗 Setup link</button>
       <label class="autotog"><input type="checkbox" id="cloudAuto"> Auto-sync</label>
     </div>
-    <div class="note" style="text-align:left;margin-top:9px">First time? Follow the SETUP file for the 4-step Google Apps Script deployment. Use the <b>same URL &amp; family code</b> on every device — each runner's log is stored separately by name, so just pick your name above. Your settings stay on this device only.</div>
+    <div class="note" style="text-align:left;margin-top:9px">First time? Follow the SETUP file for the 4-step Google Apps Script deployment. <b>New device?</b> On your already-set-up phone, tap <b>🔗 Setup link</b>, send yourself that link (text/email), and open it on the other device — it auto-fills the URL &amp; code and pulls your data. Treat that link like a password — anyone with it can see all three logs.</div>
   </section>
 
   <footer>
@@ -833,6 +834,32 @@ async function cloudAutoPull(){
     } else cloudStat('No cloud data yet for '+userName(active)+' — Save to start.','ok');
   }catch(e){ cloudStat('⚠ '+e.message,'err'); }
 }
+function buildSetupLink(){
+  const url=$('cloudUrl').value.trim(), code=$('cloudCode').value.trim();
+  if(!url||!code){ cloudStat('Fill in your URL + family code first, then make the link','err'); return null; }
+  const payload=btoa(unescape(encodeURIComponent(JSON.stringify({u:url,c:code}))));
+  return location.origin+location.pathname+'#setup='+payload;
+}
+async function copySetupLink(){
+  const link=buildSetupLink(); if(!link) return;
+  try{ await navigator.clipboard.writeText(link); cloudStat('🔗 Setup link copied! Open it on your other device to auto-configure. Treat it like a password — don\'t post it publicly.','ok'); }
+  catch(e){ window.prompt('Copy this setup link, then open it on your other device (treat it like a password):', link); }
+}
+function applySetupLinkFromHash(){
+  const m=(location.hash||'').match(/setup=([^&]+)/);
+  if(!m) return;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+    if(data && data.u && data.c){
+      $('cloudUrl').value=data.u; $('cloudCode').value=data.c;
+      cfgSet(CFG_URL,data.u); cfgSet(CFG_CODE,data.c);
+      $('cloudAuto').checked=true; cfgSet(CFG_AUTO,'1');
+      history.replaceState(null,'',location.origin+location.pathname);   // strip the sensitive hash from the address bar
+      cloudStat('✓ Sync settings loaded from your setup link — pulling your data…','busy');
+      cloudAutoPull();
+    }
+  }catch(e){ cloudStat('That setup link looks corrupted — re-copy it from your set-up device.','err'); }
+}
 function cloudInit(){
   $('cloudUrl').value=cfgGet(CFG_URL); $('cloudCode').value=cfgGet(CFG_CODE); $('cloudAuto').checked=cfgGet(CFG_AUTO)==='1';
   $('cloudUrl').onchange=()=>cfgSet(CFG_URL,$('cloudUrl').value.trim());
@@ -840,6 +867,8 @@ function cloudInit(){
   $('cloudAuto').onchange=()=>{ cfgSet(CFG_AUTO,$('cloudAuto').checked?'1':'0'); if($('cloudAuto').checked) cloudAutoPull(); };
   $('cloudSave').onclick=()=>cloudPush(false);
   $('cloudLoad').onclick=()=>{ if(confirm('Load '+userName(active)+'\'s data from the cloud and replace it on this device?')) cloudPull(); };
+  $('cloudLink').onclick=copySetupLink;
+  applySetupLinkFromHash();
 }
 
 /* ============ PROFILES (multi-user) ============ */
