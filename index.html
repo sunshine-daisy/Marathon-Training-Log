@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJ0IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjM4MThiIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTM0ZTU0Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNGNENFNjMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNDOTk2MkYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHJ4PSIxNSIgZmlsbD0idXJsKCN0KSIvPjxwb2x5Z29uIHBvaW50cz0iMjIsOSAzMCw5IDMyLDMwIDI2LDMzIiBmaWxsPSIjREQ1QjJBIi8+PHBvbHlnb24gcG9pbnRzPSI0Miw5IDM0LDkgMzIsMzAgMzgsMzMiIGZpbGw9IiNERDVCMkEiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjQwIiByPSIxNSIgZmlsbD0idXJsKCNnKSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwYXRoIGQ9Ik0zMiwzMiBMMzQsMzcuMjUgTDM5LjYsMzcuNTMgTDM1LjIzLDQxLjA1IEwzNi43LDQ2LjQ3IEwzMiw0My40IEwyNy4zLDQ2LjQ3IEwyOC43Nyw0MS4wNSBMMjQuNCwzNy41MyBMMzAsMzcuMjUgWiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPgo=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Albert+Sans:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --cream:#FBF6EC; --paper:#FFFDF8; --ink:#2A2420; --ink-soft:#6B6259;
@@ -246,7 +246,8 @@
   .lbhome .tbtn{padding:11px 22px; font-size:13.5px}
   .chartblock{margin-top:16px}
   .chart-h{font-family:'Fraunces',serif; font-weight:700; font-size:14px; color:var(--teal-dk); margin-bottom:7px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap}
-  .chartsvg{width:100%; height:auto; display:block; background:#fff; border:1px solid var(--line); border-radius:12px}
+  .chartsvg{width:100%; max-width:520px; height:auto; display:block; margin:0 auto; background:#fff; border:1px solid var(--line); border-radius:12px}
+  .chartsvg text{font-family:'Archivo Narrow','Albert Sans',sans-serif; font-weight:600}
   .chart-x{font-size:11px; color:var(--ink-soft); font-weight:600; display:inline-flex; align-items:center; gap:5px; margin-left:6px}
   .chart-x .u,#chartRanUnit .u{font-family:'Albert Sans'; font-size:11px; font-weight:700; padding:4px 10px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); cursor:pointer; border-radius:8px}
   .chart-x .u.sel,#chartRanUnit .u.sel{background:var(--teal); color:#fff; border-color:var(--teal)}
@@ -349,10 +350,10 @@
   <div class="profilebar">
     <span class="pblabel">Whose log</span>
     <div class="profiles" id="profiles"></div>
-    <button class="lbtoggle" id="lbToggle">🏅 Family leaderboard</button>
-    <button class="lbtoggle" id="guideToggle">📋 Plan guide</button>
     <button class="lbtoggle" id="runlogToggle">📖 Run log</button>
     <button class="lbtoggle" id="chartsToggle">📊 Charts</button>
+    <button class="lbtoggle" id="lbToggle">🏅 Family leaderboard</button>
+    <button class="lbtoggle" id="guideToggle">📋 Plan guide</button>
   </div>
 
   <section class="lbcard" id="lbCard" hidden>
@@ -971,15 +972,21 @@ async function cloudFetchAll(){
   const c=cloudCfg();
   if(!c.url||!c.code){ lbStatus('Showing this device only — add a cloud URL + family code to pull all three runners.','muted'); return; }
   lbStatus('Refreshing team from cloud…','busy');
-  try{
-    for(const u of USERS){
-      const res=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'load',code:c.code+'|'+u.id})});
+  let okCount=0, errCount=0;
+  for(const u of USERS){
+    try{
+      const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(), 12000);
+      const res=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'load',code:c.code+'|'+u.id}),signal:ctrl.signal});
+      clearTimeout(to);
       const j=JSON.parse(await res.text());
-      if(j.ok && j.data && j.data.weeks) TEAM[u.id]=j.data;
-    }
-    lbStatus('Team updated ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),'ok');
-    renderLeaderboard();
-  }catch(e){ lbStatus('⚠ '+e.message+' — showing what\'s on this device.','err'); renderLeaderboard(); }
+      if(j.ok && j.data && j.data.weeks){ TEAM[u.id]=j.data; okCount++; }
+    }catch(e){ errCount++; }   // a runner with no data (or a slow call) never blocks the others
+  }
+  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if(!okCount && errCount) lbStatus('⚠ Couldn\'t reach the cloud — showing what\'s on this device.','err');
+  else if(errCount) lbStatus('Team updated ✓ '+t+' (some runners not reachable)','ok');
+  else lbStatus('Team updated ✓ '+t,'ok');
+  renderLeaderboard();
 }
 function openLeaderboard(){
   $('lbCard').hidden=false; $('guideCard').hidden=true; $('runlogCard').hidden=true; $('chartsCard').hidden=true; renderLeaderboard(); window.scrollTo({top:0,behavior:'smooth'});
@@ -1060,7 +1067,8 @@ function openRunLog(){ $('runlogCard').hidden=false; $('lbCard').hidden=true; $(
 
 /* ============ CHARTS ============ */
 let chartsXMode='run', chartsRanUnit='sec';
-function fmtMD(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtMD(d){ return String(d.getDate()).padStart(2,'0')+'-'+MON3[d.getMonth()]; }
 function svgChart(pts, opts){
   opts=opts||{};
   const W=320,H=182,L=46,R=12,T=14,B=28, pw=W-L-R, ph=H-T-B;
@@ -1076,17 +1084,17 @@ function svgChart(pts, opts){
   let g='';
   for(let k=0;k<=4;k++){ const v=ymin+(ymax-ymin)*k/4, y=yPx(v);
     g+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#EDE4D3"/>';
-    g+='<text x="'+(L-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" fill="#8a8175" font-size="9">'+opts.yFmt(v)+'</text>'; }
+    g+='<text x="'+(L-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" fill="#8a8175" font-size="8">'+opts.yFmt(v)+'</text>'; }
   if(opts.refLine!=null){ const y=yPx(opts.refLine);
     g+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#DD5B2A" stroke-width="1.5" stroke-dasharray="5 4"/>';
-    g+='<text x="'+(W-R)+'" y="'+(y-4).toFixed(1)+'" text-anchor="end" fill="#B8431B" font-size="9" font-weight="700">'+(opts.refLabel||'')+'</text>'; }
+    g+='<text x="'+(W-R)+'" y="'+(y-4).toFixed(1)+'" text-anchor="end" fill="#B8431B" font-size="8" font-weight="700">'+(opts.refLabel||'')+'</text>'; }
   let d=''; pts.forEach((p,i)=>{ d+=(i===0?'M':'L')+xPx(i).toFixed(1)+' '+yPx(p.v).toFixed(1)+' '; });
   g+='<path d="'+d+'" fill="none" stroke="#1F6F78" stroke-width="2"/>';
   pts.forEach((p,i)=>{ const c=opts.colorFn?opts.colorFn(p.v):'#1F6F78';
     g+='<circle cx="'+xPx(i).toFixed(1)+'" cy="'+yPx(p.v).toFixed(1)+'" r="3.4" fill="'+c+'" stroke="#fff" stroke-width="1"><title>'+fmtMD(p.dt)+' · '+opts.yFmt(p.v)+'</title></circle>'; }); 
   const step=Math.max(1,Math.ceil(n/6));
-  for(let i=0;i<n;i+=step){ g+='<text x="'+xPx(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="9">'+fmtMD(pts[i].dt)+'</text>'; }
-  if((n-1)%step!==0){ g+='<text x="'+xPx(n-1).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="9">'+fmtMD(pts[n-1].dt)+'</text>'; }
+  for(let i=0;i<n;i+=step){ g+='<text x="'+xPx(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="8">'+fmtMD(pts[i].dt)+'</text>'; }
+  if((n-1)%step!==0){ g+='<text x="'+xPx(n-1).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="8">'+fmtMD(pts[n-1].dt)+'</text>'; }
   return '<svg viewBox="0 0 '+W+' '+H+'" class="chartsvg">'+g+'</svg>';
 }
 function renderCharts(){
