@@ -242,6 +242,14 @@
   .rl-over{color:#9a5a12; font-weight:700}
   .rl-long{display:inline-block; font-size:8.5px; font-weight:800; letter-spacing:.06em; color:#fff; background:var(--ember); padding:1px 6px; border-radius:20px; margin-left:6px; vertical-align:middle}
   .rl-empty{padding:22px; text-align:center; color:var(--ink-soft); font-size:13.5px}
+  .lbhome{margin-top:18px; padding-top:16px; border-top:1px solid var(--line); text-align:center}
+  .lbhome .tbtn{padding:11px 22px; font-size:13.5px}
+  .chartblock{margin-top:16px}
+  .chart-h{font-family:'Fraunces',serif; font-weight:700; font-size:14px; color:var(--teal-dk); margin-bottom:7px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap}
+  .chartsvg{width:100%; height:auto; display:block; background:#fff; border:1px solid var(--line); border-radius:12px}
+  .chart-x{font-size:11px; color:var(--ink-soft); font-weight:600; display:inline-flex; align-items:center; gap:5px; margin-left:6px}
+  .chart-x .u,#chartRanUnit .u{font-family:'Albert Sans'; font-size:11px; font-weight:700; padding:4px 10px; border:1px solid var(--line); background:#fff; color:var(--ink-soft); cursor:pointer; border-radius:8px}
+  .chart-x .u.sel,#chartRanUnit .u.sel{background:var(--teal); color:#fff; border-color:var(--teal)}
   .milesauto{font-family:'Fraunces',serif; font-weight:900; font-size:30px; color:var(--teal-dk); line-height:1.05}
   .milesauto .hint{display:block; font-family:'Albert Sans'; font-size:10.5px; font-weight:500; color:var(--ink-soft); letter-spacing:0; text-transform:none; margin-top:3px}
   .rgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
@@ -344,6 +352,7 @@
     <button class="lbtoggle" id="lbToggle">🏅 Family leaderboard</button>
     <button class="lbtoggle" id="guideToggle">📋 Plan guide</button>
     <button class="lbtoggle" id="runlogToggle">📖 Run log</button>
+    <button class="lbtoggle" id="chartsToggle">📊 Charts</button>
   </div>
 
   <section class="lbcard" id="lbCard" hidden>
@@ -351,7 +360,7 @@
       <h3>🏅 Family Leaderboard</h3>
       <div class="lbbtns">
         <button class="tbtn" id="lbRefresh">↻ Refresh from cloud</button>
-        <button class="tbtn" id="lbClose">Close</button>
+        <button class="tbtn" id="lbClose">🏠 Home</button>
       </div>
     </div>
     <div class="lbtag">26.2 is a team sport 💛 — three runners, one finish line on Nov 7.</div>
@@ -361,12 +370,13 @@
       <div class="lbgrid" id="lbGrid"></div>
       <div class="lbcap">Each square = one training week (Weeks 1 → 19). Deeper color = more days logged. Current week outlined.</div>
     </div>
+    <div class="lbhome"><button class="tbtn" id="lbHomeBtm">🏠 Back to tracker</button></div>
   </section>
 
   <section class="guidecard" id="guideCard" hidden>
     <div class="lbhead">
       <h3>📋 How the plan works</h3>
-      <div class="lbbtns"><button class="tbtn" id="guideClose">Close</button></div>
+      <div class="lbbtns"><button class="tbtn" id="guideClose">🏠 Home</button></div>
     </div>
     <p class="gintro">19 weeks, four phases. You run/walk the whole way through — the walk breaks never go away. Here's the shape of it:</p>
 
@@ -376,17 +386,18 @@
     </div>
     <div class="gphase">
       <div class="gph-h"><span class="gph-tag" style="background:#D9EAF1;color:#22708A">Build</span> Weeks 7–12</div>
-      <p>Switch from minutes to <b>miles</b>. Weekday runs stay short (2–3.5 mi); the Saturday long run climbs 4 → 8 mi, with a cutback at Week 12. Carry whatever run/walk rhythm feels good into the distance.</p>
+      <p>Switch from minutes to <b>miles</b>. Weekday runs stay short (2–3.5 mi); the Saturday long run climbs 4 → 8 mi, with a cutback + your 5K at Week 12. Carry whatever run/walk rhythm feels good into the distance.</p>
     </div>
     <div class="gphase">
       <div class="gph-h"><span class="gph-tag" style="background:#E7DEF4;color:#6B4A86">Go Long</span> Weeks 13–16</div>
-      <p>The big climb: long runs go 10 → 12 → 15 → <b>18 (your peak)</b>. Weekday runs stay short on purpose, to keep your legs fresh for Saturday. This is where the marathon endurance gets built.</p>
+      <p>The big climb: 11 → <b>Fort Ben Half (13.1)</b> → 17 → <b>20 (your peak)</b>. Weekday runs stay short on purpose, to keep your legs fresh for Saturday. This is where the marathon endurance gets built — and the peak is health-gated (drop to 18 if anything nags).</p>
     </div>
     <div class="gphase">
       <div class="gph-h"><span class="gph-tag" style="background:#E6F0E6;color:#3E7A4E">Taper</span> Weeks 17–19</div>
-      <p>Ease off so you arrive <b>fresh</b>: the long run drops 12 → 8 → race. Rest is the secret weapon — you bank the fitness and let your body recharge for Nov 7.</p>
+      <p>Ease off so you arrive <b>fresh</b>: the long run drops 13 → 8 → race. Rest is the secret weapon — you bank the fitness and let your body recharge for Nov 7.</p>
     </div>
     <p class="gnote">💡 The number to beat is <b>16:00/mile</b> (the 7-hour limit). Your job over the summer is simple: spend more time in your running bursts — already faster than 16:00 — and less time walking, so your average pace drifts under the line by fall.</p>
+    <div class="lbhome"><button class="tbtn" id="guideHomeBtm">🏠 Back to tracker</button></div>
   </section>
 
   <section class="lbcard" id="runlogCard" hidden>
@@ -394,12 +405,31 @@
       <h3>📖 Run Log</h3>
       <div class="lbbtns">
         <button class="tbtn" id="runlogSort">↕ Sort by date</button>
-        <button class="tbtn" id="runlogClose">Close</button>
+        <button class="tbtn" id="runlogClose">🏠 Home</button>
       </div>
     </div>
     <div class="lbtag">Every run <b id="runlogWho">Lilian</b> has marked done — auto-filled, runs only. Tap <b>When</b> to flip the order.</div>
     <div class="rltotals" id="runlogTotals"></div>
     <div class="rlwrap"><table class="rltable" id="runlogTable"></table></div>
+    <div class="lbhome"><button class="tbtn" id="runlogHomeBtm">🏠 Back to tracker</button></div>
+  </section>
+
+  <section class="lbcard" id="chartsCard" hidden>
+    <div class="lbhead">
+      <h3>📊 Charts</h3>
+      <div class="lbbtns"><button class="tbtn" id="chartsClose">🏠 Home</button></div>
+    </div>
+    <div class="lbtag"><b id="chartsWho">Lilian</b>'s runs over time.
+      <span class="chart-x" id="chartsXToggle">X-axis: <button class="u sel" data-x="run">Run #</button><button class="u" data-x="date">Date</button></span>
+    </div>
+    <div class="chartblock"><div class="chart-h">📏 Miles per run</div><div id="chartMiles"></div></div>
+    <div class="chartblock"><div class="chart-h">⏱ Total session time</div><div id="chartTime"></div></div>
+    <div class="chartblock"><div class="chart-h">🎯 Pace vs. 16:00 cutoff</div><div id="chartPace"></div></div>
+    <div class="chartblock">
+      <div class="chart-h">🏃 Run time (actual running)<span class="unit" id="chartRanUnit"><button class="u sel" data-u="sec">sec</button><button class="u" data-u="min">min</button></span></div>
+      <div id="chartRan"></div>
+    </div>
+    <div class="lbhome"><button class="tbtn" id="chartsHomeBtm">🏠 Back to tracker</button></div>
   </section>
 
   <header class="top">
@@ -735,7 +765,7 @@ function renderDays(){
   grid.querySelectorAll('.dcond .chum').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.humidity=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
   grid.querySelectorAll('.dcond .cfeel').forEach(inp=>inp.oninput=()=>{ const i=inp.closest('.dcond').dataset.d, l=w.days[i]||(w.days[i]={}); l.feelsLike=(inp.value===''?null:parseFloat(inp.value)); persistQuiet(); });
 }
-function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); }
+function softTotals(){ renderHeader(); renderReflect(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); const _ch=$('chartsCard'); if(_ch&&!_ch.hidden) renderCharts(); }
 
 function renderReflect(){
   const w=wkData(view), r=w.ref||(w.ref={});
@@ -745,7 +775,7 @@ function renderReflect(){
   $('refMilesAuto').textContent=weekMiles(w); $('refWins').value=r.wins||''; $('refLong').value=r.long||''; $('refAdjust').value=r.adjust||''; $('refWeight').value=(r.weight!=null?r.weight:'');
 }
 
-function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); cloudAutoPush(); }
+function persist(){ DATA.view=view; DATA.updatedAt=Date.now(); store.save(); renderHeader(); renderHeatmap(); const _lb=$('lbCard'); if(_lb&&!_lb.hidden) renderLeaderboard(); const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); const _ch=$('chartsCard'); if(_ch&&!_ch.hidden) renderCharts(); cloudAutoPush(); }
 let qt; function persistQuiet(){ DATA.view=view; DATA.updatedAt=Date.now(); clearTimeout(qt); qt=setTimeout(()=>store.save(),400); cloudAutoPush(); }
 
 function renderAll(){ renderWeekNav(); renderDays(); renderReflect(); renderHeader(); renderHeatmap(); }
@@ -856,7 +886,7 @@ function applySetupLinkFromHash(){
       $('cloudAuto').checked=true; cfgSet(CFG_AUTO,'1');
       history.replaceState(null,'',location.origin+location.pathname);   // strip the sensitive hash from the address bar
       cloudStat('✓ Sync settings loaded from your setup link — pulling your data…','busy');
-      cloudAutoPull();
+      cloudPull();   // force a full load (a fresh device should always populate from the cloud)
     }
   }catch(e){ cloudStat('That setup link looks corrupted — re-copy it from your set-up device.','err'); }
 }
@@ -893,7 +923,7 @@ function switchUser(id){
   active=id; ROOT.activeUser=id; DATA=ROOT.users[id];
   view=DATA.view||currentWeek();
   store.save(); applyAccent(); renderProfiles(); renderAll(); cloudAutoPull();
-  const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog();
+  const _rl=$('runlogCard'); if(_rl&&!_rl.hidden) renderRunLog(); const _ch=$('chartsCard'); if(_ch&&!_ch.hidden) renderCharts();
 }
 
 /* ============ FAMILY LEADERBOARD ============ */
@@ -952,14 +982,15 @@ async function cloudFetchAll(){
   }catch(e){ lbStatus('⚠ '+e.message+' — showing what\'s on this device.','err'); renderLeaderboard(); }
 }
 function openLeaderboard(){
-  $('lbCard').hidden=false; $('guideCard').hidden=true; $('runlogCard').hidden=true; renderLeaderboard(); window.scrollTo({top:0,behavior:'smooth'});
+  $('lbCard').hidden=false; $('guideCard').hidden=true; $('runlogCard').hidden=true; $('chartsCard').hidden=true; renderLeaderboard(); window.scrollTo({top:0,behavior:'smooth'});
   const c=cloudCfg(); if(c.url&&c.code) cloudFetchAll();
   else lbStatus('Showing this device only — set up cloud sync to pull all three runners.','muted');
 }
 function closeLeaderboard(){ $('lbCard').hidden=true; }
+function goHome(){ $('lbCard').hidden=true; $('guideCard').hidden=true; $('runlogCard').hidden=true; $('chartsCard').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); }
 $('lbToggle').onclick=()=>{ $('lbCard').hidden ? openLeaderboard() : closeLeaderboard(); };
-$('guideToggle').onclick=()=>{ const g=$('guideCard'); const willShow=g.hidden; g.hidden=!willShow; if(willShow){ $('lbCard').hidden=true; $('runlogCard').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); } };
-$('guideClose').onclick=()=>{ $('guideCard').hidden=true; };
+$('guideToggle').onclick=()=>{ const g=$('guideCard'); const willShow=g.hidden; g.hidden=!willShow; if(willShow){ $('lbCard').hidden=true; $('runlogCard').hidden=true; $('chartsCard').hidden=true; window.scrollTo({top:0,behavior:'smooth'}); } };
+$('guideClose').onclick=goHome; $('guideHomeBtm').onclick=goHome;
 
 /* ============ RUN LOG ============ */
 let runLogDesc=true;
@@ -1025,11 +1056,58 @@ function renderRunLog(){
   $('runlogTable').innerHTML=html;
   const wh=$('rlWhenH'); if(wh) wh.onclick=()=>{ runLogDesc=!runLogDesc; renderRunLog(); };
 }
-function openRunLog(){ $('runlogCard').hidden=false; $('lbCard').hidden=true; $('guideCard').hidden=true; renderRunLog(); window.scrollTo({top:0,behavior:'smooth'}); }
+function openRunLog(){ $('runlogCard').hidden=false; $('lbCard').hidden=true; $('guideCard').hidden=true; $('chartsCard').hidden=true; renderRunLog(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ============ CHARTS ============ */
+let chartsXMode='run', chartsRanUnit='sec';
+function fmtMD(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+function svgChart(pts, opts){
+  opts=opts||{};
+  const W=320,H=182,L=46,R=12,T=14,B=28, pw=W-L-R, ph=H-T-B;
+  if(!pts.length) return '<svg viewBox="0 0 '+W+' '+H+'" class="chartsvg"><text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" fill="#8a8175" font-size="12">No runs logged yet</text></svg>';
+  let vals=pts.map(p=>p.v), ymin=Math.min.apply(null,vals), ymax=Math.max.apply(null,vals);
+  if(opts.refLine!=null){ ymin=Math.min(ymin,opts.refLine); ymax=Math.max(ymax,opts.refLine); }
+  if(ymin===ymax){ ymin-=1; ymax+=1; }
+  const pad=(ymax-ymin)*0.12; ymin-=pad; ymax+=pad;
+  const yPx=v=> T+ph*(1-(v-ymin)/(ymax-ymin));
+  const n=pts.length; let xPx;
+  if(chartsXMode==='date' && n>1){ const t0=pts[0].dt.getTime(), sp=(pts[n-1].dt.getTime()-t0)||1; xPx=i=> L+pw*((pts[i].dt.getTime()-t0)/sp); }
+  else { xPx=i=> n===1? L+pw/2 : L+pw*(i/(n-1)); }
+  let g='';
+  for(let k=0;k<=4;k++){ const v=ymin+(ymax-ymin)*k/4, y=yPx(v);
+    g+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#EDE4D3"/>';
+    g+='<text x="'+(L-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end" fill="#8a8175" font-size="9">'+opts.yFmt(v)+'</text>'; }
+  if(opts.refLine!=null){ const y=yPx(opts.refLine);
+    g+='<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="#DD5B2A" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    g+='<text x="'+(W-R)+'" y="'+(y-4).toFixed(1)+'" text-anchor="end" fill="#B8431B" font-size="9" font-weight="700">'+(opts.refLabel||'')+'</text>'; }
+  let d=''; pts.forEach((p,i)=>{ d+=(i===0?'M':'L')+xPx(i).toFixed(1)+' '+yPx(p.v).toFixed(1)+' '; });
+  g+='<path d="'+d+'" fill="none" stroke="#1F6F78" stroke-width="2"/>';
+  pts.forEach((p,i)=>{ const c=opts.colorFn?opts.colorFn(p.v):'#1F6F78';
+    g+='<circle cx="'+xPx(i).toFixed(1)+'" cy="'+yPx(p.v).toFixed(1)+'" r="3.4" fill="'+c+'" stroke="#fff" stroke-width="1"><title>'+fmtMD(p.dt)+' · '+opts.yFmt(p.v)+'</title></circle>'; }); 
+  const step=Math.max(1,Math.ceil(n/6));
+  for(let i=0;i<n;i+=step){ g+='<text x="'+xPx(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="9">'+fmtMD(pts[i].dt)+'</text>'; }
+  if((n-1)%step!==0){ g+='<text x="'+xPx(n-1).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" fill="#8a8175" font-size="9">'+fmtMD(pts[n-1].dt)+'</text>'; }
+  return '<svg viewBox="0 0 '+W+' '+H+'" class="chartsvg">'+g+'</svg>';
+}
+function renderCharts(){
+  const who=$('chartsWho'); if(who) who.textContent=userName(active);
+  const runs=gatherRuns(DATA).slice().sort((a,b)=>a.dt-b.dt);
+  $('chartMiles').innerHTML=svgChart(runs.filter(r=>r.miles!=null).map(r=>({v:r.miles,dt:r.dt})),{yFmt:v=>(Math.round(v*10)/10).toFixed(1)});
+  $('chartTime').innerHTML=svgChart(runs.filter(r=>r.totalMin!=null).map(r=>({v:r.totalMin,dt:r.dt})),{yFmt:v=>fmtPace(v)});
+  $('chartPace').innerHTML=svgChart(runs.filter(r=>r.miles>0&&r.totalMin>0).map(r=>({v:r.totalMin/r.miles,dt:r.dt})),{yFmt:v=>fmtPace(v), refLine:16, refLabel:'16:00 cutoff', colorFn:v=> v<=16?'#2E7D5B':'#DD5B2A'});
+  $('chartRan').innerHTML=svgChart(runs.filter(r=>r.ran!=null).map(r=>{ const sec=(r.ranUnit==='min'?r.ran*60:r.ran); return {v: chartsRanUnit==='sec'? sec : sec/60, dt:r.dt}; }),{yFmt:v=> chartsRanUnit==='sec'? Math.round(v)+'s' : (Math.round(v*10)/10)+'m'});
+  document.querySelectorAll('#chartRanUnit .u').forEach(b=>b.classList.toggle('sel', b.dataset.u===chartsRanUnit));
+  document.querySelectorAll('#chartsXToggle .u').forEach(b=>b.classList.toggle('sel', b.dataset.x===chartsXMode));
+}
+function openCharts(){ $('chartsCard').hidden=false; $('lbCard').hidden=true; $('guideCard').hidden=true; $('runlogCard').hidden=true; renderCharts(); window.scrollTo({top:0,behavior:'smooth'}); }
 $('runlogToggle').onclick=()=>{ const c=$('runlogCard'); c.hidden ? openRunLog() : (c.hidden=true); };
-$('runlogClose').onclick=()=>{ $('runlogCard').hidden=true; };
+$('chartsToggle').onclick=()=>{ const c=$('chartsCard'); c.hidden ? openCharts() : goHome(); };
+$('chartsClose').onclick=goHome; $('chartsHomeBtm').onclick=goHome;
+$('chartsXToggle').addEventListener('click', e=>{ const b=e.target.closest('[data-x]'); if(!b) return; chartsXMode=b.dataset.x; renderCharts(); });
+$('chartRanUnit').addEventListener('click', e=>{ const b=e.target.closest('[data-u]'); if(!b) return; chartsRanUnit=b.dataset.u; renderCharts(); });
+$('runlogClose').onclick=goHome; $('runlogHomeBtm').onclick=goHome;
 $('runlogSort').onclick=()=>{ runLogDesc=!runLogDesc; renderRunLog(); };
-$('lbClose').onclick=closeLeaderboard;
+$('lbClose').onclick=goHome; $('lbHomeBtm').onclick=goHome;
 $('lbRefresh').onclick=cloudFetchAll;
 
 applyAccent();
